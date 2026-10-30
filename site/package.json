@@ -1,0 +1,21 @@
+{
+  "name": "lacouture-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Site e-commerce vitrine Lacouture, compilé en un seul fichier HTML autonome.",
+  "scripts": {
+    "build": "node build.mjs",
+    "lint": "eslint src build.mjs tests eslint.config.js",
+    "test": "node tests/parcours.test.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@fontsource/bodoni-moda": "^5.1.1",
+    "@fontsource/jost": "^5.1.1",
+    "esbuild": "^0.24.2",
+    "eslint": "^9.17.0",
+    "globals": "^15.14.0",
+    "gsap": "^3.13.0"
+  }
+}

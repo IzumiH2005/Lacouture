@@ -1,0 +1,64 @@
+/* Base : remise à zéro, typographie, grille. */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: calc(var(--h-entete) + var(--s-4)); }
+body {
+  margin: 0; background: var(--c-fond); color: var(--c-texte);
+  font-family: var(--f-texte); font-size: var(--t-corps); line-height: 1.55; font-weight: 400;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+body.verrou { overflow: hidden; }
+img, svg { display: block; max-width: 100%; }
+img { height: auto; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; background: none; border: 0; padding: 0; }
+a { color: inherit; }
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure, fieldset { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+fieldset { border: 0; padding: 0; min-width: 0; }
+legend { padding: 0; }
+:focus-visible { outline: var(--focus); outline-offset: 2px; }
+.inverse :focus-visible { outline-color: var(--ivoire); }
+::selection { background: var(--encre); color: var(--ivoire); }
+
+.visuellement-cache {
+  position: absolute !important; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+.evitement {
+  position: fixed; left: var(--s-4); top: var(--s-4); z-index: 100; padding: var(--s-3) var(--s-4);
+  background: var(--encre); color: var(--ivoire); transform: translateY(-200%);
+}
+.evitement:focus { transform: none; }
+
+/* Typographie de référence (G.2) */
+.t-couverture { font-family: var(--f-titre); font-size: var(--t-couverture); line-height: 0.9; letter-spacing: -0.01em; text-transform: uppercase; font-weight: 400; }
+.t-h1 { font-family: var(--f-titre); font-size: var(--t-h1); line-height: 1.05; font-weight: 400; }
+.t-produit { font-family: var(--f-titre); font-size: var(--t-produit); line-height: 1.1; font-weight: 400; }
+.t-h3 { font-size: var(--t-h3); line-height: 1.3; font-weight: 500; }
+.t-corps { font-size: var(--t-corps); line-height: 1.55; }
+.t-petit { font-size: var(--t-petit); line-height: 1.45; }
+.t-doux { color: var(--c-texte-doux); }
+.t-surtitre { font-size: var(--t-surtitre); line-height: 1.3; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
+.t-italique { font-style: italic; }
+.mesure { max-width: 65ch; }
+
+/* Grille (C.5) */
+.grille {
+  display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); column-gap: var(--gouttiere);
+  width: 100%; max-width: var(--largeur-max); margin-inline: auto; padding-inline: var(--marge);
+}
+.conteneur { width: 100%; max-width: var(--largeur-max); margin-inline: auto; padding-inline: var(--marge); }
+.section { padding-block: var(--s-section); }
+.section + .section { padding-top: 0; }
+.plein { grid-column: 1 / -1; }
+
+.inverse { background: var(--c-fond-inverse); color: var(--c-texte-inverse); }
+.inverse .t-doux { color: #B8AA9B; }
+.fond-doux { background: var(--c-fond-doux); }
+
+/* L'attribut hidden l'emporte sur les display des composants, sauf pour les panneaux
+   animés en hauteur (accordéon, récapitulatif) qui gèrent eux-mêmes leur masquage. */
+[hidden]:not(.accordeon__panneau):not(.recap-replie__corps) { display: none !important; }
+/* Titres qui reçoivent le focus par programme après une navigation : pas de cadre. */
+[tabindex="-1"]:focus:not(:focus-visible), h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus { outline: none; }
