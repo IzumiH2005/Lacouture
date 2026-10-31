@@ -24,6 +24,9 @@ export function ouverture() {
     const traits = el.querySelectorAll('.trait path');
     const plein = el.querySelector('.plein');
     const mot = el.querySelector('.ouverture__mot svg');
+    /* Le mot part de sous son masque, hors de vue : la marge du masque ne laisse rien dépasser. */
+    const sous = () => mot.parentNode.offsetHeight + 4;
+    gsap.set(mot, { y: sous(), autoAlpha: 0 });
     let fini = false;
     const terminer = () => {
       if (fini) return; fini = true;
@@ -38,7 +41,7 @@ export function ouverture() {
       .fromTo(traits, { drawSVG: '0%' }, { drawSVG: '100%', duration: 1.3, stagger: 0.04, ease: 'power2.inOut' }, 0.1)
       .to(plein, { opacity: 1, duration: 0.5, ease: 'couture' }, '-=0.3')
       .to(traits, { opacity: 0, duration: 0.4 }, '<0.15')
-      .fromTo(mot, { yPercent: 110 }, { yPercent: 0, duration: 0.8, ease: 'couture' }, '<-0.1')
+      .to(mot, { y: 0, autoAlpha: 1, duration: 0.8, ease: 'couture' }, '<-0.1')
       .to({}, { duration: 0.35 });
     el.querySelector('.ouverture__passer').addEventListener('click', terminer);
     window.addEventListener('keydown', terminer, { once: true });

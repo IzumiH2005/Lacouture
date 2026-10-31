@@ -23,6 +23,40 @@ const etapes = [
 ];
 const ACTUELLE = 1;
 
+/* Chute de l'étiquette, calculée d'avance à 120 images par seconde.
+   1. Chute libre : le fil se déroule avec elle et l'étiquette garde sa légère inclinaison,
+      car rien ne la fait tourner tant qu'elle tombe.
+   2. Le fil se tend : il agit comme un ressort amorti qui retient l'étiquette, la fait
+      remonter un peu, puis la laisse retomber.
+   3. Balancier : l'étiquette pivote sur son œillet. Son poids apparent vaut la gravité moins
+      l'accélération de l'œillet, donc la secousse du fil relance le balancement, qui s'amortit. */
+const FREQ = 120;
+const chuteEtiquette = () => {
+  const g = 1700; const hauteur = 470;         // px/s², px de chute
+  const raideur = 9000; const amortiFil = 110; // fil peu élastique : petit rebond de 5 px
+  const bras = 150; const amortiBalancier = 1.5;
+  const dt = 1 / FREQ;
+  let y = -hauteur; let vy = 0;
+  let angle = 0.04; let va = 0.22;             // radians : l'étiquette arrive penchée d'environ 13°
+  const etats = [];
+  for (let n = 0; n < FREQ * 6; n += 1) {
+    const tension = y > 0 ? raideur * y + amortiFil * vy : 0;
+    const ay = g - Math.max(0, tension);
+    const aa = -((g - ay) / bras) * Math.sin(angle) - amortiBalancier * va;
+    vy += ay * dt; y += vy * dt;
+    va += aa * dt; angle += va * dt;
+    etats.push([y - g / raideur, (angle * 180) / Math.PI]);
+    if (n > FREQ && Math.abs(vy) < 0.5 && Math.abs(va) < 0.002 && Math.abs(angle) < 0.002) break;
+  }
+  /* La dernière seconde ramène en douceur l'étiquette à l'équilibre exact. */
+  const fin = Math.min(FREQ, etats.length);
+  for (let i = 0; i < fin; i += 1) {
+    const k = (fin - i) / fin; const e = etats[etats.length - fin + i];
+    e[0] *= k; e[1] *= k;
+  }
+  return etats;
+};
+
 export default {
   cle: null,
   titre: () => 'Votre commande est prête à être envoyée',
@@ -125,11 +159,18 @@ export default {
 
     if (!reduit()) {
       const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
-      /* Le fil descend, l'étiquette tombe, rebondit à peine sur son œillet et se balance jusqu'à l'arrêt. */
-      tl.from('[data-fil]', { scaleY: 0, duration: 0.9, ease: 'power3.inOut' })
-        .from('[data-etiq]', { y: -420, duration: 0.9, ease: 'power3.in' }, 0.15)
-        .fromTo('[data-etiq]', { rotate: 16, transformOrigin: '50% 11px' }, { rotate: 0, duration: 2.6, ease: 'elastic.out(1, 0.28)' }, 1.02)
-        .to('[data-etiq]', { scaleY: 0.97, duration: 0.12, ease: 'power2.out', yoyo: true, repeat: 1, transformOrigin: '50% 11px' }, 1.02)
+      const etiq = $('[data-etiq]', racine);
+      const fil = $('[data-fil]', racine);
+      const longueurFil = fil.offsetHeight;
+      const etats = chuteEtiquette();
+      const poser = (i) => {
+        const [y, angle] = etats[Math.min(i, etats.length - 1)];
+        gsap.set(etiq, { y, rotate: angle, transformOrigin: '50% 11px' });
+        gsap.set(fil, { scaleY: Math.max(0, (longueurFil + y) / longueurFil) });
+      };
+      poser(0);
+      const lecture = { i: 0 };
+      tl.to(lecture, { i: etats.length - 1, duration: etats.length / FREQ, ease: 'none', onUpdate: () => poser(Math.round(lecture.i)) }, 0)
         .from('[data-titre-merci]', { yPercent: 110, duration: 1.1 }, 1.1)
         .from(racine.querySelectorAll('[data-etape]'), { x: -14, opacity: 0, duration: 0.9, stagger: 0.1 }, 1.35)
         .from(rempli, { scaleY: 0, duration: 1.4, ease: 'expo.inOut' }, 1.5)
