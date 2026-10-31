@@ -30,6 +30,8 @@ export function monterMenu() {
     </div>
   </div>`);
   document.body.append(el);
+  /* La position de départ est posée par GSAP : une translation CSS s'ajouterait à yPercent. */
+  gsap.set(el, { yPercent: -100 });
   bouton = document.querySelector('[data-ouvrir-menu]');
   el.addEventListener('keydown', (e) => { if (e.key === 'Escape') fermerMenu(); piegerFocus(el, e); });
   el.addEventListener('click', (e) => {

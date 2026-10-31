@@ -3,8 +3,17 @@
 import { parId } from './data/catalogue.js';
 
 const CLE = { panier: 'lacouture.selection', brouillon: 'lacouture.brouillon', commande: 'lacouture.commande' };
-const lire = (k, defaut) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : defaut; } catch { return defaut; } };
-const ecrire = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* stockage indisponible : l'état reste en mémoire */ } };
+/* Copie en mémoire : si le navigateur refuse le stockage (aperçu de fichier, navigation privée),
+   la commande reste disponible jusqu'à la fermeture de la page. */
+const memoire = new Map();
+const lire = (k, defaut) => {
+  try { const v = localStorage.getItem(k); if (v) return JSON.parse(v); } catch { /* stockage indisponible */ }
+  return memoire.has(k) ? JSON.parse(memoire.get(k)) : defaut;
+};
+const ecrire = (k, v) => {
+  memoire.set(k, JSON.stringify(v));
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* la copie en mémoire suffit */ }
+};
 
 const ecouteurs = new Set();
 let lignes = lire(CLE.panier, []).filter((l) => parId(l.id));
@@ -37,7 +46,7 @@ export const panier = {
 export const brouillon = {
   lire: () => lire(CLE.brouillon, {}),
   ecrire: (v) => ecrire(CLE.brouillon, v),
-  effacer: () => { try { localStorage.removeItem(CLE.brouillon); } catch { /* rien */ } },
+  effacer: () => { memoire.delete(CLE.brouillon); try { localStorage.removeItem(CLE.brouillon); } catch { /* rien */ } },
 };
 
 export const commande = {

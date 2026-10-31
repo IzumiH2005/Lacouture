@@ -39,15 +39,15 @@
   --c-accent: var(--fuchsia-texte);
   --c-accent-inverse: var(--rose-poudre);
 
-  /* Typographie du dossier de conception (G.2) : Bodoni Moda 400 pour les titres, jamais
-     sous 24 px (romain = affirmation, italique = émotion) ; Jost 400 pour le texte,
-     Jost 500 pour les libellés en capitales, les boutons, les prix et les noms de carte. */
+  /* Bodoni Moda 400 reste aux grands titres d'ambiance (couverture, sections, manifeste, menu),
+     jamais sous 24 px. Tout ce qu'on lit pour commander passe en Jost : nom du produit,
+     prix, totaux, numéro de commande, titres du formulaire et texte courant. */
   --f-titre: "Bodoni Moda", "Bodoni 72", "Didot", Georgia, serif;
   --f-texte: "Jost", "Futura", "Century Gothic", system-ui, sans-serif;
   --t-couverture: clamp(3.5rem, 8.5vw + 1.75rem, 10rem);  /* 56 px mobile, 120 à 160 desktop */
   --t-h1: clamp(2rem, 1.6vw + 1.6rem, 3rem);             /* 32 à 48 */
   --t-manifeste: clamp(1.625rem, 1.2vw + 1.35rem, 2.5rem);
-  --t-produit: clamp(1.875rem, 1vw + 1.6rem, 2.5rem);     /* 30 à 40 */
+  --t-produit: clamp(1.625rem, 0.6vw + 1.45rem, 2.125rem); /* Jost 500, 26 à 34 */
   --t-h3: clamp(1.125rem, 0.25vw + 1.06rem, 1.25rem);     /* Jost 500, 18 à 20 */
   --t-corps: clamp(1rem, 0.1vw + 0.97rem, 1.0625rem);     /* 16 à 17 */
   --t-petit: 0.875rem;                                    /* 14 */

@@ -23,11 +23,8 @@ import { titreEnLignes } from '../motion/reveal.js';
 import { railHtml, monterRail } from './accueil.js';
 import introuvable from './introuvable.js';
 
-/* Le dernier mot du nom passe en italique (affirmation, puis émotion). */
-const nomTitre = (nom) => {
-  const i = nom.lastIndexOf(' ');
-  return i < 0 ? esc(nom) : `${esc(nom.slice(0, i))} <em>${esc(nom.slice(i + 1))}</em>`;
-};
+/* Le nom reste en Jost droit : il doit se lire du premier coup d'œil. */
+const nomTitre = (nom) => esc(nom);
 
 const vues = (m, v) => (m.versions.find((x) => x.id === v) || m.versions[0]).images;
 

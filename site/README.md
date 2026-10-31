@@ -91,6 +91,10 @@ le message envoyé. Aucun prestataire de paiement n'est branché et aucun backen
 10. **Textes.** Le site reprend les rares textes publiés par Lacouture (bio Instagram, story
     « About us », publications Box et Iconic) au lieu d'en écrire de nouveaux. Les textes
     d'interface restent courts.
+11. **Typographie.** Le dossier met le nom du produit en Bodoni Moda. Le site le passe en
+    Jost 500, comme les prix, les totaux, le numéro de commande et les titres du formulaire,
+    parce que les clientes doivent lire ces informations sans effort. Bodoni Moda reste aux
+    grands titres d'ambiance.
 
 ## Accessibilité
 

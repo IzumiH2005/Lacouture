@@ -278,7 +278,7 @@ select.champ__saisie {
 .quantite output { min-width: 28px; text-align: center; font-variant-numeric: tabular-nums; }
 .total { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-4); font-size: var(--t-petit); }
 .total--fort { font-size: var(--t-surtitre); letter-spacing: var(--e-surtitre); text-transform: uppercase; }
-.total--fort .prix { font-family: var(--f-titre); font-weight: 400; font-size: 1.75rem; letter-spacing: 0; text-transform: none; }
+.total--fort .prix { font-weight: 500; font-size: 1.5rem; letter-spacing: 0; text-transform: none; }
 
 /* ---------- Barre de sélection fixe (fiche, mobile) ---------- */
 .barre-achat {
@@ -350,7 +350,7 @@ select.champ__saisie {
 }
 
 /* ---------- Menu plein écran (mobile) ---------- */
-.menu { position: fixed; inset: 0; z-index: 70; display: flex; flex-direction: column; background: var(--encre); color: var(--creme); visibility: hidden; transform: translateY(-100%); overflow: hidden; }
+.menu { position: fixed; inset: 0; z-index: 70; display: flex; flex-direction: column; background: var(--encre); color: var(--creme); visibility: hidden; overflow: hidden; }
 .menu__haut { display: flex; align-items: center; justify-content: space-between; height: var(--h-entete); padding-inline: calc(var(--marge) - 14px); flex: none; }
 .menu__haut svg:not(.icone) { height: 11px; width: auto; }
 .menu__contenu { flex: 1; overflow-y: auto; display: flex; flex-direction: column; justify-content: space-between; gap: var(--s-7); padding: var(--s-7) var(--marge) calc(var(--s-6) + env(safe-area-inset-bottom)); }
