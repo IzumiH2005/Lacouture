@@ -357,9 +357,8 @@ select.champ__saisie {
 .menu__liste { display: grid; gap: var(--s-1); }
 .menu__lien { position: relative; display: flex; align-items: baseline; gap: var(--s-4); min-height: 60px; padding-block: var(--s-2); font-family: var(--f-titre); font-size: 2.5rem; line-height: 1.05; text-decoration: none; }
 .menu__index { font-family: var(--f-texte); font-size: var(--t-surtitre); letter-spacing: 0.2em; color: var(--rose-poudre); min-width: 24px; }
-.menu__lien .fil { position: absolute; left: 40px; bottom: 4px; width: 48px; transform: scaleX(0); color: var(--rose-poudre); }
-.menu__lien[aria-current="page"] .fil { transform: none; }
-.menu__lien[aria-current="page"] { font-style: italic; }
+.menu__lien .fil { display: none; }
+.menu__lien[aria-current="page"], .menu__lien[aria-current="page"] .menu__index { color: var(--fuchsia); }
 .menu__secondaire { display: grid; gap: var(--s-2); padding-top: var(--s-5); border-top: 1px solid rgb(244 238 230 / 0.16); color: var(--sur-encre-doux); }
 .menu__ligne { overflow: hidden; }
 .menu :focus-visible { outline-color: var(--creme); }
