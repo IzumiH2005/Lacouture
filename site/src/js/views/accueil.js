@@ -1,10 +1,10 @@
-/* Accueil (C.8) : la Couverture, les pièces, le déroulé, les familles, le Noir de la Box,
-   l'appel au sur-mesure et la bande d'archives. */
-import { boutique, collections, parId } from '../data/catalogue.js';
+/* Accueil : la couverture ICONIC, le slogan lu mot à mot, le bandeau, la collection en
+   quinconce, « About us » en trois points, la Box et l'atelier. Tout le texte vient des
+   comptes de Lacouture (marque.js) ; rien n'est rédigé en plus. */
+import { collections, parId } from '../data/catalogue.js';
 import { img } from '../data/images.js';
 import { marque } from '../data/marque.js';
 import { carte } from '../ui/card.js';
-import { roule, lienFleche } from '../ui/button.js';
 import { icone } from '../ui/icons.js';
 import { lettres, couverture } from '../motion/hero.js';
 import { ouverture } from '../motion/intro.js';
@@ -14,6 +14,11 @@ import { demoPromo } from '../data/demo.js';
 import { esc, sur } from '../util/dom.js';
 
 const iconic = collections.iconic;
+const LIENS_POINTS = [
+  () => lienCaps('#/aide/tailles', 'Guide des tailles'),
+  () => `<span class="facon__liens">${lienCaps('#/boutique', 'Nos modèles')}${lienCaps('#/sur-mesure', 'Proposer mon modèle')}</span>`,
+  () => '',
+];
 
 export function railHtml(id, titre, modeles, { surtitre = '', lien = '' } = {}) {
   return `<section class="section" aria-labelledby="${id}">
@@ -51,102 +56,154 @@ export function monterRail(racine) {
   return () => nettoyages.forEach((f) => f());
 }
 
+/* Lien en capitales soulignées, avec flèche facultative. */
+export const lienCaps = (href, texte, { accent = false, fleche = false } = {}) =>
+  `<a class="lien-caps${accent ? ' lien-caps--accent' : ''}" href="${href}"><span>${esc(texte)}${fleche ? icone('droite') : ''}</span></a>`;
+
+/* Surtitre suivi d'un point de couture qui se trace. */
+export const surtitreCousu = (texte) =>
+  `<div class="cousu" data-monte><span class="t-surtitre">${esc(texte)}</span><span class="couture" data-couture aria-hidden="true"></span></div>`;
+
+/* Le slogan de la bio Instagram, découpé en mots pour la lecture guidée. Les mots entre * sont en italique. */
+const MANIFESTE = marque.slogan.replace('sur mesure', '*sur mesure*').replace('à chaque instant', '*à chaque instant*');
+const motsManifeste = () => MANIFESTE.split(/(\*[^*]+\*)/).filter(Boolean).flatMap((bout) => {
+  const it = bout.startsWith('*');
+  return bout.replace(/\*/g, '').trim().split(/\s+/).map((m) => `<span class="mot"${it ? ' data-it' : ''}>${it ? `<em>${m}</em>` : m}</span>`);
+}).join(' ').replace(/<\/span> (<span class="mot">[.,;:!?]<\/span>)/g, '</span>$1');
+
+/* Faits annoncés par la maison, sans promesse non fournie. */
+const BANDEAU = ['Confection sur mesure', 'Cocody · Abidjan', marque.tailles, 'La matière de votre choix'];
+
 export default {
   cle: 'accueil',
   titre: () => 'Tenues confectionnées à Abidjan',
   rendu: () => {
-    const soiree = parId('robe-rouge-plissee'); const boubous = parId('kaftan-bandes');
+    const choix = ['robe-drapee-chocolat', 'veste-volants', 'robe-licou-volants', 'robe-rouge-plissee'].map(parId).filter(Boolean);
+    const [colA, colB] = [choix.filter((_, i) => i % 2 === 0), choix.filter((_, i) => i % 2 === 1)];
+    const bande = BANDEAU.map((f) => `<span>${esc(f)}</span><span class="bandeau__etoile">✦</span>`).join('');
     return `
     <section class="couverture" aria-labelledby="titre-couverture">
       <div class="couverture__media"><img src="${iconic.image}" alt="${esc(iconic.alt)}" fetchpriority="high"></div>
-      <h1 class="couverture__titre t-couverture" id="titre-couverture"><span class="visuellement-cache">Collection Iconic</span>${lettres('ICONIC')}</h1>
-      <div class="couverture__texte">
-        <p class="surtitre t-surtitre">Collection · ${iconic.periode}</p>
-        <p class="couverture__faits">Des pièces confectionnées dans notre atelier de Cocody, à votre taille ou sur vos mesures.</p>
-        ${demoPromo.active ? `<p class="couverture__offre t-petit">${demoPromo.libelle} sur toute la collection, offre de lancement ${demoPromo.jusqua}.</p>` : ''}
-        ${lienFleche('#/collection/iconic', 'Découvrir la collection')}
+      <div class="couverture__voile" aria-hidden="true"></div>
+      <div class="couverture__bas">
+        <p class="couverture__meta t-surtitre">${esc(marque.collection.annonce)}</p>
+        <h1 class="couverture__titre t-couverture" id="titre-couverture"><span class="visuellement-cache">Collection Iconic</span>${lettres('ICONIC')}</h1>
+        <div class="couverture__texte">
+          ${demoPromo.active ? `<p class="couverture__offre">${demoPromo.libelle} sur toute la collection <span class="badge badge--demo">offre ${esc(demoPromo.jusqua)}</span></p>` : ''}
+          ${lienCaps('#/collection/iconic', 'Découvrir la collection', { fleche: true })}
+        </div>
+      </div>
+      <div class="couverture__defiler" aria-hidden="true"><span>Défiler</span><span class="couverture__piste"><span></span></span></div>
+    </section>
+
+    <section class="section manifeste" aria-labelledby="titre-manifeste">
+      <div class="conteneur">
+        ${surtitreCousu('Lacouture · Abidjan')}
+        <h2 class="visuellement-cache" id="titre-manifeste">La maison</h2>
+        <p class="manifeste__texte t-manifeste" data-manifeste>${motsManifeste()}</p>
+        <p class="manifeste__lieu t-surtitre" data-monte>${esc(marque.activite)}</p>
       </div>
     </section>
 
-    ${railHtml('titre-pieces', 'Les pièces de l’atelier', boutique, { surtitre: 'À commander', lien: lienFleche('#/boutique', 'Voir toute la boutique') })}
+    <div class="bandeau inverse" role="note" aria-label="${esc(BANDEAU.join(', '))}">
+      <div class="bandeau__piste" aria-hidden="true" data-bandeau><div>${bande}</div><div>${bande}</div></div>
+    </div>
 
-    <section class="section fond-doux" aria-labelledby="titre-etapes">
+    <section class="section collection-accueil" aria-labelledby="titre-collection">
       <div class="conteneur">
-        <div class="tete"><p class="surtitre t-surtitre">Comment ça se passe</p><h2 class="t-h1" id="titre-etapes" data-titre>Une commande, trois temps.</h2></div>
-        <ol class="etapes" data-etapes>
-          <li class="etapes__fil" aria-hidden="true"><span class="fil"></span></li>
-          <li class="etape" data-reveler><span class="etape__num" aria-hidden="true">01</span><h3 class="t-h3">Vous choisissez</h3><p class="t-doux">Un modèle et sa taille, de XS à 2XL ou plus. Ou vos propres mesures, si vous préférez.</p></li>
-          <li class="etape" data-reveler><span class="etape__num" aria-hidden="true">02</span><h3 class="t-h3">L’atelier confirme</h3><p class="t-doux">Vous transmettez votre commande sur WhatsApp. L’atelier vous confirme le délai, le tissu et le paiement.</p></li>
-          <li class="etape" data-reveler><span class="etape__num" aria-hidden="true">03</span><h3 class="t-h3">Votre pièce est confectionnée</h3><p class="t-doux">Elle est coupée et cousue à Cocody, puis livrée ou retirée à l’atelier.</p></li>
+        <div class="tete-ligne" data-monte>
+          <h2 class="t-h1" id="titre-collection" data-titre>La collection</h2>
+          ${lienCaps('#/boutique', 'Tout voir')}
+        </div>
+        <p class="t-surtitre t-doux" data-monte>Iconic · ${esc(iconic.periode)}</p>
+        <div class="quinconce">
+          <div class="quinconce__col">${colA.map((m) => carte(m)).join('')}</div>
+          <div class="quinconce__col quinconce__col--decalee">${colB.map((m) => carte(m)).join('')}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section facons inverse" aria-labelledby="titre-facons">
+      <div class="conteneur">
+        <p class="t-surtitre facons__surtitre" data-monte>About us</p>
+        <h2 class="t-h1 facons__titre" id="titre-facons" data-titre>C’est quoi<br><em>Lacouture&nbsp;?</em></h2>
+        <ol class="facons__liste">
+          <li class="facons__fil" aria-hidden="true"><span data-fil-facons></span></li>
+          ${marque.aPropos.points.map((p, i) => `<li class="facon">
+            <span class="cercle" aria-hidden="true" data-cercle>${i + 1}</span>
+            <div class="facon__texte" data-monte>
+              <h3 class="facon__titre">${esc(p.titre)}</h3>
+              <p>${esc(p.texte)}</p>
+              ${i === 2 ? `<p class="facon__note t-petit">${esc(marque.substitution)}</p>` : ''}
+              ${LIENS_POINTS[i]()}
+            </div>
+          </li>`).join('')}
         </ol>
       </div>
     </section>
 
-    <section class="section" aria-labelledby="titre-familles">
+    <section class="box-accueil" aria-labelledby="titre-box">
+      <div class="box-accueil__media"><img src="${img.boxMains}" alt="Deux mains posées sur la box noire Lacouture" loading="lazy" data-box-img></div>
+      <div class="box-accueil__carte" data-box-carte>
+        <p class="t-surtitre t-accent">La Box</p>
+        <h2 class="box-accueil__titre" id="titre-box">Offrez-leur <em>une box.</em></h2>
+        <p>Faites-leur plaisir autrement.</p>
+        ${lienCaps('#/offrir', 'Composer une box', { accent: true })}
+      </div>
+    </section>
+
+    <section class="section atelier" aria-labelledby="titre-atelier">
       <div class="conteneur">
-        <div class="tete"><p class="surtitre t-surtitre">Par famille</p><h2 class="visuellement-cache" id="titre-familles">Familles de pièces</h2></div>
-        <div class="familles">
-          <a class="famille famille--grande" href="#/boutique/soiree" data-reveler>
-            <div class="media media--34" data-image><img src="${soiree.images[0].src}" alt="${esc(soiree.images[0].alt)}" loading="lazy"></div>
-            <span class="famille__titre">Soirée</span><span class="lien-fleche" aria-hidden="true">${roule('Voir les robes')}<span class="lien-fleche__trait"></span></span>
-          </a>
-          <a class="famille famille--petite" href="#/boutique/boubous" data-reveler>
-            <div class="media" data-image><img src="${boubous.images[0].src}" alt="${esc(boubous.images[0].alt)}" loading="lazy"></div>
-            <span class="famille__titre">Boubous et kaftans</span><span class="lien-fleche" aria-hidden="true">${roule('Voir les boubous')}<span class="lien-fleche__trait"></span></span>
-          </a>
+        ${surtitreCousu('L’atelier')}
+        <div class="atelier__duo">
+          <div class="atelier__attente" data-monte><span class="badge badge--demo">À fournir</span><span>Photo de l’atelier : mains, mètre ruban, tissus</span></div>
+          <div class="media atelier__photo" data-image><img src="${img.kaftanRouille}" alt="Boubou à médaillons rouille porté" loading="lazy"></div>
         </div>
-      </div>
-    </section>
-
-    <section class="noir inverse" aria-labelledby="titre-box">
-      <div class="conteneur noir__grille">
-        <div class="noir__media"><div class="media" data-image data-voile-encre><img src="${img.boxOuverture}" alt="Deux mains posées sur la box Lacouture, coffret noir au logo rose" loading="lazy"></div></div>
-        <div class="noir__texte">
-          <p class="surtitre t-surtitre">Offrir</p>
-          <h2 class="noir__titre" id="titre-box" data-titre>${esc(marque.box.accroche.split('. ')[0])}.</h2>
-          <p>${esc(marque.box.accroche.split('. ')[1])}</p>
-          <a class="bouton bouton--inverse" href="#/offrir">${roule('Découvrir la box')}</a>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" aria-labelledby="titre-mesure">
-      <div class="conteneur appel">
-        <h2 class="appel__phrase" id="titre-mesure" data-titre>Une pièce coupée d’après vos mesures, pas d’après une grille.</h2>
-        ${lienFleche('#/sur-mesure', 'Commander sur mesure')}
-      </div>
-    </section>
-
-    <section class="section" aria-labelledby="titre-archives">
-      <div class="conteneur">
-        <div class="tete tete--ligne"><div class="tete"><p class="surtitre t-surtitre">Archives</p><h2 class="t-h1" id="titre-archives" data-titre>Vu sur @${marque.reseaux[0].compte}</h2></div></div>
-        <div class="bande">
-          ${[[img.portraitNb, 'Portrait en noir et blanc, campagne Iconic'], [img.leopard, 'Ensemble imprimé léopard'], [img.veste, 'Veste à volants sur buste, à l’atelier'], [img.jauneProfil, 'Robe licou à volants, de profil']]
-            .map(([s, c]) => `<figure data-reveler><div class="media" data-image><img src="${s}" alt="${esc(c)}" loading="lazy"></div><figcaption>${esc(c)}</figcaption></figure>`).join('')}
-        </div>
-        <div style="margin-top:var(--s-6)">${lienFleche('#/realisations', 'Voir les réalisations')}</div>
+        <h2 class="t-h1 atelier__titre" data-titre>Confection<br><em>sur mesure</em></h2>
+        <p class="atelier__texte" data-monte>${esc(marque.lieu)}.</p>
+        ${lienCaps('#/maison', 'La Maison')}
       </div>
     </section>`;
   },
   monter(racine, { premiere } = {}) {
-    const nettoyages = [monterRail(racine)];
+    document.documentElement.classList.add('entete-sombre');
+    const nettoyages = [() => document.documentElement.classList.remove('entete-sombre')];
     const lancerCouverture = () => couverture(racine);
     if (premiere) ouverture().then(lancerCouverture); else lancerCouverture();
 
+    /* Le bandeau défile en continu, lentement, et s'arrête en mouvement réduit. */
+    const bandeau = racine.querySelector('[data-bandeau]');
+    if (bandeau && !reduit()) gsap.to(bandeau, { xPercent: -50, repeat: -1, duration: 32, ease: 'none' });
+
+    if (reduit()) return () => nettoyages.forEach((f) => f());
+
     racine.querySelectorAll('[data-titre]').forEach((t) => {
-      if (reduit()) return;
       ScrollTrigger.create({ trigger: t, start: 'top 88%', once: true, onEnter: () => nettoyages.push(titreEnLignes(t)) });
     });
+    racine.querySelectorAll('[data-monte]').forEach((el) => {
+      gsap.from(el, { y: 30, opacity: 0, duration: 1.1, ease: 'couture', scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
+    });
+    racine.querySelectorAll('[data-couture]').forEach((el) => {
+      gsap.from(el, { scaleX: 0, duration: 1.4, ease: 'expo.inOut', scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
+    });
 
-    /* Le Fil du déroulé se dessine au rythme du défilement. */
-    const fil = racine.querySelector('.etapes__fil .fil');
-    if (fil && !reduit()) {
-      const vertical = !matchMedia('(min-width: 1024px)').matches;
-      gsap.fromTo(fil, { [vertical ? 'scaleY' : 'scaleX']: 0 }, {
-        [vertical ? 'scaleY' : 'scaleX']: 1, ease: 'none',
-        scrollTrigger: { trigger: '[data-etapes]', start: 'top 75%', end: 'bottom 60%', scrub: 0.5 },
-      });
-    }
+    /* Manifeste : chaque mot s'allume au rythme de la lecture. */
+    const mots = racine.querySelectorAll('[data-manifeste] .mot');
+    gsap.fromTo(mots, { opacity: 0.14 }, {
+      opacity: 1, stagger: 0.12, ease: 'none',
+      scrollTrigger: { trigger: '[data-manifeste]', start: 'top 80%', end: 'bottom 55%', scrub: 0.6 },
+    });
+
+    /* Deux façons : le fil relie les cercles, qui se posent avec un léger dépassement. */
+    gsap.from('[data-fil-facons]', { scaleY: 0, ease: 'none', scrollTrigger: { trigger: '.facons__liste', start: 'top 70%', end: 'bottom 70%', scrub: 0.5 } });
+    racine.querySelectorAll('[data-cercle]').forEach((c) => {
+      gsap.from(c, { scale: 0.4, opacity: 0, duration: 0.9, ease: 'back.out(1.5)', scrollTrigger: { trigger: c, start: 'top 85%', once: true } });
+    });
+
+    /* La Box : l'écrin se rapproche, la carte glisse par-dessus. */
+    gsap.fromTo('[data-box-img]', { scale: 1.16 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: '.box-accueil__media', start: 'top bottom', end: 'bottom top', scrub: true } });
+    gsap.from('[data-box-carte]', { y: 70, opacity: 0, duration: 1.2, ease: 'couture', scrollTrigger: { trigger: '[data-box-carte]', start: 'top 95%', once: true } });
+
     return () => nettoyages.forEach((f) => f());
   },
 };

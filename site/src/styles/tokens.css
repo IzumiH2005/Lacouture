@@ -1,49 +1,65 @@
 /* ==========================================================================
-   Tokens Lacouture. Source : docs/dossier-conception.md, section G.
+   Tokens Lacouture, direction « La Maison, le fil. »
+   60 % Crème lin, 30 % Noir encre, le reste en Sable et Rose poudré.
+   Le Fuchsia reste sous 3 % de la surface : bouton de commande, étape en cours, Box.
    Toute valeur visuelle du site part d'ici.
    ========================================================================== */
 :root {
-  /* G.1 Couleurs */
-  --ivoire: #F7F2EB;
-  --lin: #EFE6DA;
-  --sable: #DCCFBF;
-  --taupe: #7A6A5B;
-  --encre: #16120F;
-  --encre-survol: #2E2620;
-  --rose-fil: #A8456B;      /* le Fil, promotion, état actif. 5 % de la surface au plus */
-  --rose-poudre: #E8C5D4;   /* uniquement sur Encre */
-  --garance: #B0322A;
+  /* Couleurs de marque */
+  --creme: #F4EEE6;          /* fond principal */
+  --ivoire: var(--creme);    /* alias historique */
+  --lin: #EFE7DC;            /* encarts clairs */
+  --lin-fonce: #E8E0D4;
+  --sable: #D8C9B6;          /* cadres, fonds d'image */
+  --sable-clair: #EAE1D5;    /* encarts de récapitulatif */
+  --pointille: #B9AA97;      /* points de couture, lignes inactives */
+  --pointille-fort: #8C7D6E;
+  --taupe: #5E534A;          /* texte secondaire sur crème (6,3:1) */
+  --brun: #3A322C;           /* texte courant */
+  --encre: #0F0D0C;
+  --encre-survol: #2A2420;
+  --rose-poudre: #E6C3D3;    /* monogramme, fil */
+  --fuchsia: #D81B7A;        /* aplats : bouton de commande, étape en cours */
+  --fuchsia-texte: #C2116A;  /* texte fuchsia sur crème (4,9:1) */
+  --rose-fil: var(--fuchsia-texte); /* alias historique : accent texte */
+  --garance: #A3271F;
   --palme: #3D6B4F;
-  --voile: rgb(22 18 15 / 0.4);
+  --sur-encre-doux: #B3A596; /* texte secondaire sur Encre */
+  --voile: rgb(15 13 12 / 0.45);
 
-  --c-fond: var(--ivoire);
+  --c-fond: var(--creme);
   --c-fond-doux: var(--lin);
   --c-fond-inverse: var(--encre);
   --c-filet: var(--sable);
-  --c-filet-fort: var(--taupe);
+  --c-filet-fort: var(--pointille-fort);
   --c-texte: var(--encre);
+  --c-texte-courant: var(--brun);
   --c-texte-doux: var(--taupe);
-  --c-texte-inverse: var(--ivoire);
-  --c-accent: var(--rose-fil);
+  --c-texte-inverse: var(--creme);
+  --c-accent: var(--fuchsia-texte);
   --c-accent-inverse: var(--rose-poudre);
 
-  /* G.2 Typographie */
+  /* Typographie du dossier de conception (G.2) : Bodoni Moda 400 pour les titres, jamais
+     sous 24 px (romain = affirmation, italique = émotion) ; Jost 400 pour le texte,
+     Jost 500 pour les libellés en capitales, les boutons, les prix et les noms de carte. */
   --f-titre: "Bodoni Moda", "Bodoni 72", "Didot", Georgia, serif;
   --f-texte: "Jost", "Futura", "Century Gothic", system-ui, sans-serif;
-  /* tailles fluides entre 390 px (mobile) et 1440 px (desktop) */
-  --t-couverture: clamp(3.5rem, 8vw + 1.55rem, 10rem);
-  --t-h1: clamp(2rem, 1.52vw + 1.63rem, 3rem);
-  --t-produit: clamp(1.875rem, 0.95vw + 1.64rem, 2.5rem);
-  --t-h3: clamp(1.125rem, 0.19vw + 1.08rem, 1.25rem);
-  --t-corps: clamp(1rem, 0.095vw + 0.977rem, 1.0625rem);
-  --t-petit: 0.875rem;
-  --t-surtitre: 0.75rem;
-  --t-prix: clamp(1.0625rem, 0.095vw + 1.04rem, 1.125rem);
-  --t-bouton: 0.875rem;
-  --t-carte: 0.9375rem;
-  --t-badge: 0.6875rem;
+  --t-couverture: clamp(3.5rem, 8.5vw + 1.75rem, 10rem);  /* 56 px mobile, 120 à 160 desktop */
+  --t-h1: clamp(2rem, 1.6vw + 1.6rem, 3rem);             /* 32 à 48 */
+  --t-manifeste: clamp(1.625rem, 1.2vw + 1.35rem, 2.5rem);
+  --t-produit: clamp(1.875rem, 1vw + 1.6rem, 2.5rem);     /* 30 à 40 */
+  --t-h3: clamp(1.125rem, 0.25vw + 1.06rem, 1.25rem);     /* Jost 500, 18 à 20 */
+  --t-corps: clamp(1rem, 0.1vw + 0.97rem, 1.0625rem);     /* 16 à 17 */
+  --t-petit: 0.875rem;                                    /* 14 */
+  --t-surtitre: 0.75rem;                                  /* 12, capitales +14 % */
+  --e-surtitre: 0.14em;
+  --e-bouton: 0.1em;
+  --t-prix: clamp(1.0625rem, 0.1vw + 1.04rem, 1.125rem);  /* 17 à 18 */
+  --t-bouton: 0.875rem;                                   /* 14 */
+  --t-carte: 0.9375rem;                                   /* 15 */
+  --t-badge: 0.625rem;
 
-  /* G.3 Espacements (base 4 px) */
+  /* Espacements (base 4 px) */
   --s-1: 4px;
   --s-2: 8px;
   --s-3: 12px;
@@ -54,38 +70,41 @@
   --s-8: 64px;
   --s-9: 96px;
   --s-10: 128px;
-  --s-section: var(--s-8);
+  --s-section: 88px;
 
-  /* C.5 Grille */
+  /* Grille */
   --cols: 4;
-  --marge: 20px;
-  --gouttiere: 12px;
+  --marge: 24px;
+  --gouttiere: 14px;
   --largeur-max: 1440px;
 
-  /* G.4 Rayons, bordures, mouvement */
+  /* Rayons, bordures, mouvement */
   --rayon: 0;
   --filet: 1px solid var(--c-filet);
+  /* Point de couture : tiret de 4 px, espace de 3 px */
+  --couture: repeating-linear-gradient(90deg, var(--pointille) 0 4px, transparent 4px 7px);
+  --couture-v: repeating-linear-gradient(180deg, var(--pointille) 0 4px, transparent 4px 7px);
   --focus: 2px solid var(--encre);
   --m-rapide: 150ms;
   --m-base: 250ms;
   --m-lent: 400ms;
-  --m-courbe: cubic-bezier(0.2, 0, 0, 1);
+  --m-courbe: cubic-bezier(0.2, 0.8, 0.2, 1);
 
   /* Dimensions de composants */
   --h-entete: 64px;
-  --h-bouton: 52px;
-  --h-champ: 52px;
+  --h-bouton: 54px;
+  --h-champ: 48px;
   --h-case: 48px;
-  --h-barre: 72px;
-  --panneau-l: 420px;
+  --h-barre: 84px;
+  --panneau-l: 440px;
 }
 
 @media (min-width: 600px) {
-  :root { --cols: 8; --marge: 32px; --gouttiere: 16px; --s-section: var(--s-9); }
+  :root { --cols: 8; --marge: 40px; --gouttiere: 20px; --s-section: 112px; }
 }
 @media (min-width: 1024px) {
-  :root { --cols: 12; --marge: 48px; --gouttiere: 24px; --s-section: var(--s-10); --h-bouton: 48px; --h-entete: 76px; }
+  :root { --cols: 12; --marge: 56px; --gouttiere: 24px; --s-section: 144px; --h-entete: 76px; }
 }
 @media (min-width: 1440px) {
-  :root { --marge: 64px; }
+  :root { --marge: 72px; }
 }

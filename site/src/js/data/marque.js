@@ -22,5 +22,15 @@ export const marque = {
   /* Règle annoncée par Lacouture sur Instagram, citée telle quelle. */
   substitution: 'Les imprimés sont dans la plupart du temps indisponibles. On prend donc des tissus ou des matières semblables.',
   box: { accroche: 'Faites-leur plaisir autrement. Offrez-leur une box.' },
-  collection: { nom: 'Iconic', periode: 'Décembre 2025' },
+  collection: { nom: 'Iconic', periode: 'Décembre 2025', annonce: 'Nouvelle collection · Déc. 2025' },
+  /* Story « About us » du 3 juillet 2023, reprise au plus près (le « client » devient « vous »). */
+  aPropos: {
+    question: 'C’est quoi Lacouture ?',
+    reponse: 'Lacouture est une boutique de confection de vêtements sur mesure.',
+    points: [
+      { titre: 'Les tailles', texte: 'En général, nous utilisons les mensurations standards : XS à 2XL ou plus.' },
+      { titre: 'Les modèles', texte: 'Vous nous contactez avec le modèle que vous souhaitez faire, ou nous vous proposons nos modèles.' },
+      { titre: 'Les tissus', texte: 'Tout dépend de vous : vous êtes libre de choisir la matière que vous désirez.' },
+    ],
+  },
 };

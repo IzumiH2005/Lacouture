@@ -1,7 +1,7 @@
-/* Finalisation (D.7, E.5) : une seule page, quatre sections reliées par le Fil.
+/* Finalisation (D.7, E.5) : une seule page, trois étapes suivies par des cercles en tête.
    Aucun paiement : la commande est préparée ici puis transmise à l'atelier sur WhatsApp. */
 import { panier, brouillon, commande } from '../store.js';
-import { demoLivraison, demoCommunes, demoRetouche } from '../data/demo.js';
+import { demoLivraison, demoCommunes } from '../data/demo.js';
 import { marque } from '../data/marque.js';
 import { champ, coche, option, poserErreur } from '../ui/fields.js';
 import { detailLigne } from '../ui/cart-panel.js';
@@ -16,6 +16,7 @@ import { gsap, ScrollTrigger, reduit, duree } from '../motion/core.js';
 import { refuser, presser } from '../motion/micro.js';
 
 const communes = Object.keys(demoCommunes);
+const PAS = ['Infos', 'Livraison', 'Envoi'];
 
 /* Délai le plus long de la sélection + un jour de livraison. */
 const delaiMax = () => Math.max(...panier.lignes().map((l) => l.modele.delai[1]));
@@ -32,7 +33,7 @@ const recapLignes = () => panier.lignes().map((l) => {
 const vide = () => `<div class="conteneur introuvable">
   <p class="surtitre t-surtitre">Finaliser ma commande</p>
   <h1 class="t-h1">Votre sélection est vide.</h1>
-  <p class="t-doux mesure">Choisissez un modèle et sa taille dans la boutique ; vous reviendrez ici pour transmettre la commande à l’atelier.</p>
+  <p class="t-doux mesure">Choisissez un modèle et sa taille dans la boutique.</p>
   <a class="bouton bouton--principal" href="#/boutique">${roule('Voir la boutique')}</a>
 </div>`;
 
@@ -44,13 +45,16 @@ export default {
     const b = brouillon.lire();
     const mode = b.mode || 'abidjan';
     return `<div class="conteneur commande">
-      <header class="page-tete"><p class="surtitre t-surtitre">Dernière étape</p><h1 class="t-h1">Finaliser ma commande</h1>
-        <p class="t-doux mesure">Quatre rubriques, une seule page. Vos saisies restent enregistrées sur ce téléphone si vous partez et revenez.</p></header>
+      <header class="page-tete"><p class="surtitre t-surtitre">Dernière étape</p><h1 class="t-h1">Finaliser ma commande</h1></header>
+      <ol class="pas" aria-label="Étapes de la commande" data-pas>
+        <span class="pas__piste" aria-hidden="true"><span class="pas__rempli" data-fil></span></span>
+        ${PAS.map((t, i) => `<li class="pas__etape" data-pas-etape><span class="cercle cercle--petit" data-etat="${i ? 'avenir' : 'actuel'}">${i + 1}</span><span class="pas__libelle">${t}</span></li>`).join('')}
+      </ol>
       <div class="commande__grille">
         <aside class="commande__cote" aria-label="Récapitulatif">
           <div class="recap-replie">
             <button type="button" class="recap-replie__bouton" aria-expanded="false" aria-controls="recap-corps" data-recap>
-              <span>Votre commande · <span data-total-haut>${prixTexte(panier.sousTotal())}</span></span>${icone('chevron')}</button>
+              <span class="t-surtitre">Votre commande</span><span class="recap-replie__total"><span class="prix" data-total-haut>${prixTexte(panier.sousTotal())}</span>${icone('chevron')}</span></button>
             <div class="recap-replie__corps" id="recap-corps" hidden><ul class="recap" style="padding-bottom:var(--s-4)">${recapLignes()}</ul></div>
           </div>
         </aside>
@@ -58,10 +62,9 @@ export default {
         <form class="commande__form" novalidate data-form>
           <div class="erreurs-resume" data-erreurs tabindex="-1" role="alert" hidden></div>
           <div class="sections">
-            <div class="sections__fil" aria-hidden="true"><span class="fil" data-fil></span></div>
 
             <fieldset class="etape-form" data-etape="1">
-              <legend class="etape-form__titre"><span class="etape-form__num" aria-hidden="true">1</span>Vos coordonnées</legend>
+              <legend class="etape-form__titre"><span class="t-surtitre t-doux">1 · Infos</span>Vos coordonnées</legend>
               ${champ({ id: 'nom', libelle: 'Nom complet', requis: true, valeur: b.nom || '', attrs: 'autocomplete="name"' })}
               ${champ({ id: 'telephone', libelle: 'Téléphone', type: 'tel', requis: true, prefixe: '+225', valeur: b.telephone || '', aide: 'Dix chiffres, par exemple 07 00 00 00 00.', attrs: 'autocomplete="tel-national" inputmode="tel"' })}
               ${coche({ id: 'whatsapp', libelle: 'Ce numéro est sur WhatsApp', coche: b.whatsapp !== false })}
@@ -69,17 +72,20 @@ export default {
             </fieldset>
 
             <fieldset class="etape-form" data-etape="2">
-              <legend class="etape-form__titre"><span class="etape-form__num" aria-hidden="true">2</span>Livraison</legend>
+              <legend class="etape-form__titre"><span class="t-surtitre t-doux">2 · Livraison</span>Où et quand</legend>
               <div class="options" role="radiogroup" aria-label="Mode de livraison">
                 ${demoLivraison.map((l) => option({ nom: 'mode', valeur: l.id, libelle: l.libelle, detail: l.detail, prix: l.id === 'abidjan' ? `dès ${prixTexte(fraisMinAbidjan())}` : l.prix ? prixTexte(l.prix) : 'Gratuit', coche: l.id === mode })).join('')}
               </div>
+              <p class="encart-demo">Tarifs et délais de livraison provisoires, à confirmer par l’atelier.</p>
               <div data-adresse style="display:grid;gap:var(--s-5)">
                 <div data-si="abidjan">${champ({ id: 'commune', libelle: 'Commune', requis: true, options: communes, valeur: b.commune || '' })}</div>
                 <div data-si="hors">${champ({ id: 'ville', libelle: 'Ville', requis: true, valeur: b.ville || '', attrs: 'autocomplete="address-level2"' })}</div>
                 ${champ({ id: 'quartier', libelle: 'Quartier', requis: true, valeur: b.quartier || '' })}
                 ${champ({ id: 'repere', libelle: 'Point de repère', facultatif: true, valeur: b.repere || '', aide: 'Ex. : après la pharmacie, portail bleu.' })}
               </div>
-              <p class="t-petit t-doux" data-si="atelier">Retrait à l’atelier de ${marque.commune}, sur rendez-vous. L’atelier vous indique l’adresse sur WhatsApp.</p>
+              <p class="t-petit t-doux" data-si="atelier">Retrait à ${marque.commune}, sur rendez-vous.</p>
+              ${champ({ id: 'date', libelle: 'Pour quand ?', type: 'date', facultatif: true, valeur: b.date || '', attrs: `min="${iso(new Date())}"` })}
+              <p class="verdict" data-verdict aria-live="polite"></p>
               ${coche({ id: 'cadeau', libelle: 'C’est un cadeau', coche: Boolean(b.cadeau) })}
               <div class="cadeau" data-bloc-cadeau ${b.cadeau ? '' : 'hidden'}>
                 ${champ({ id: 'dest-nom', libelle: 'Nom de la personne', requis: true, valeur: b['dest-nom'] || '' })}
@@ -90,30 +96,22 @@ export default {
             </fieldset>
 
             <fieldset class="etape-form" data-etape="3">
-              <legend class="etape-form__titre"><span class="etape-form__num" aria-hidden="true">3</span>Votre date</legend>
-              ${champ({ id: 'date', libelle: 'Pour quand en avez-vous besoin ?', type: 'date', facultatif: true, valeur: b.date || '', attrs: `min="${iso(new Date())}"` })}
-              <p class="verdict" data-verdict aria-live="polite"></p>
-            </fieldset>
-
-            <fieldset class="etape-form" data-etape="4">
-              <legend class="etape-form__titre"><span class="etape-form__num" aria-hidden="true">4</span>Récapitulatif</legend>
-              <ul class="recap">${recapLignes()}</ul>
-              <div class="recap">
-                <div class="total"><span>Sous-total</span><span class="prix">${prix(panier.sousTotal())}</span></div>
-                <div class="total"><span>Livraison</span><span class="prix" data-frais></span></div>
-                <div class="total total--fort"><span>Total</span><span class="prix" data-total></span></div>
+              <legend class="etape-form__titre"><span class="t-surtitre t-doux">3 · Envoi</span>Récapitulatif</legend>
+              <div class="encart-sable recap-final">
+                <ul class="recap">${recapLignes()}</ul>
+                <div class="recap">
+                  <div class="total"><span>Sous-total</span><span class="prix">${prix(panier.sousTotal())}</span></div>
+                  <div class="total"><span>Livraison</span><span class="prix" data-frais></span></div>
+                </div>
+                <div class="encart-sable__total total--fort"><span>Total</span><span class="prix" data-total></span></div>
               </div>
               ${champ({ id: 'note', libelle: 'Une précision pour l’atelier', facultatif: true, zone: true, valeur: b.note || '' })}
-              <ul class="regles" aria-label="À savoir avant de transmettre">
-                <li><span>Chaque pièce est confectionnée après confirmation : comptez ${delaiMax() > 7 ? 'jusqu’à ' : ''}${delaiMax()} jours avant l’envoi.</span></li>
-                <li><span>Si l’imprimé de la photo n’est plus disponible, l’atelier vous propose un tissu semblable avant de couper.</span></li>
-                <li><span>${esc(demoRetouche)}</span></li>
+              <ul class="regles" aria-label="À savoir">
+                <li><span>Confection après confirmation : ${delaiMax() > 7 ? 'jusqu’à ' : ''}${delaiMax()} jours. <span class="badge badge--demo">Démo</span></span></li>
+                <li><span>${esc(marque.substitution)}</span></li>
               </ul>
-              <div class="note-paiement">
-                <p><strong>Aucun paiement n’est demandé ici.</strong></p>
-                <p>En validant, vous préparez un message pour l’atelier. Vous l’envoyez sur WhatsApp ; l’atelier vérifie le délai et le tissu, puis vous indique comment régler.</p>
-              </div>
-              <button type="submit" class="bouton bouton--principal bouton--plein" data-envoyer>${roule('Préparer ma commande')}</button>
+              <p class="note-paiement"><strong>Aucun paiement n’est demandé ici.</strong> Vous envoyez la commande sur WhatsApp ; l’atelier la confirme et vous dit comment régler.</p>
+              <button type="submit" class="bouton bouton--fuchsia bouton--plein" data-envoyer>${roule('Préparer ma commande')}</button>
               <p class="t-petit t-doux" style="text-align:center">Total indicatif : <span data-total-bas></span></p>
             </fieldset>
           </div>
@@ -164,28 +162,28 @@ export default {
     /* Date : la réponse s'affiche en direct, la commande n'est jamais bloquée. */
     const majVerdict = () => {
       const el = $('[data-verdict]', form); const v = champVal('date');
-      if (!v) { el.removeAttribute('data-etat'); el.innerHTML = `<span>Sans date, l’atelier compte au plus tôt : livraison vers le ${dateLongue(datePossible())}.</span>`; return; }
+      if (!v) { el.removeAttribute('data-etat'); el.innerHTML = `<span>Sans date : au plus tôt, vers le ${dateLongue(datePossible())}.</span>`; return; }
       const voulue = new Date(`${v}T12:00`);
       const ok = voulue >= datePossible();
       el.dataset.etat = ok ? 'ok' : 'serre';
       el.innerHTML = ok
-        ? `${icone('coche')}<span>C’est faisable : livraison prévue avant le ${dateLongue(voulue)}, sous réserve de confirmation par l’atelier.</span>`
-        : `${icone('alerte')}<span>Délai serré : l’atelier vous contacte avant de commencer pour voir ce qui est possible.</span>`;
+        ? `${icone('coche')}<span>Faisable avant le ${dateLongue(voulue)}, à confirmer par l’atelier.</span>`
+        : `${icone('alerte')}<span>Délai serré : l’atelier vous contacte avant de commencer.</span>`;
     };
 
-    /* Le Fil vertical se colore à mesure que les sections sont complètes. */
-    const fil = $('[data-fil]', form);
+    /* Les cercles d'étape se remplissent à mesure que les rubriques sont complètes. */
+    const fil = $('[data-fil]', racine);
+    const cercles = $$('[data-pas-etape] .cercle', racine);
     const majFil = () => {
       const completes = [
         !regles.nom(champVal('nom')) && !regles.telephone(champVal('telephone')) && !regles.email(champVal('email')),
         ['commune', 'ville', 'quartier', 'dest-nom', 'dest-tel'].every((id) => !regles[id](champVal(id))),
-        true,
         false,
       ];
-      completes[2] = completes[0] && completes[1];
       $$('.etape-form', form).forEach((f, i) => f.setAttribute('data-complete', String(completes[i])));
       let n = 0; while (n < completes.length && completes[n]) n++;
-      gsap.to(fil, { scaleY: Math.min(1, n / 3), duration: duree(0.7), ease: 'couture', overwrite: true });
+      cercles.forEach((c, i) => { c.dataset.etat = i < n ? 'fait' : i === n ? 'actuel' : 'avenir'; });
+      gsap.to(fil, { scaleX: Math.min(1, n / 2), duration: duree(0.7), ease: 'couture', overwrite: true });
     };
 
     /* Brouillon conservé à chaque saisie (E.5). */
@@ -273,7 +271,7 @@ export default {
     });
 
     appliquerMode(); majVerdict(); majFil();
-    gsap.set(fil, { scaleY: 0 });
+    gsap.set(fil, { scaleX: 0 });
     majFil();
     return () => off.forEach((f) => f());
   },

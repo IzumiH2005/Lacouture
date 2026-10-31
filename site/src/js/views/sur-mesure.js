@@ -21,13 +21,13 @@ export default {
   rendu: () => `<div class="conteneur">
     <header class="page-tete">
       <p class="surtitre t-surtitre">Sur mesure</p>
-      <h1 class="t-h1" data-titre>Le modèle que vous avez en tête, à vos mesures.</h1>
+      <h1 class="t-h1" data-titre>Votre modèle, <em>sur mesure.</em></h1>
     </header>
     <div class="edito" style="padding-bottom:var(--s-section)">
       <div class="edito__media"><div class="media media--34" data-image><img src="${img.robeRouge}" alt="Robe rouge plissée sur buste à l’atelier de Cocody" loading="lazy"></div>
-        <p class="t-petit t-doux" style="margin-top:var(--s-3)">Lacouture le dit ainsi : « le client nous contacte avec le modèle qu’il souhaite faire ».</p></div>
+        <p class="t-petit t-doux" style="margin-top:var(--s-3)">« Le client nous contacte avec le modèle qu’il souhaite faire. » Lacouture, sur Instagram.</p></div>
       <div class="edito__texte" style="display:grid;gap:var(--s-6)">
-        <p class="mesure">Décrivez la pièce, l’occasion et la date. Ce formulaire prépare un message pour l’atelier : vous l’envoyez sur WhatsApp, avec votre photo d’inspiration, et l’atelier vous répond avec un devis. Rien n’est payé à ce stade.</p>
+        <p class="mesure">Décrivez la pièce. Vous enverrez ce message et votre photo sur WhatsApp, et l’atelier vous répond. Rien n’est payé ici.</p>
         <form class="sections" style="padding-left:0" novalidate data-form-mesure>
           ${champ({ id: 'sm-modele', libelle: 'Le modèle souhaité', requis: true, zone: true, aide: 'Coupe, longueur, manches, couleur, tissu si vous en avez un. Vous joindrez la photo dans WhatsApp.' })}
           ${champ({ id: 'sm-occasion', libelle: 'L’occasion', facultatif: true, options: occasions })}

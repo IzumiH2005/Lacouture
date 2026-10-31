@@ -35,9 +35,8 @@ export default {
         <div class="edito__media"><div class="media media--34" data-image><img src="${img.boxMains}" alt="${esc(box.images[2].alt)}" loading="lazy"></div></div>
         <div class="edito__texte prose">
           <p class="surtitre t-surtitre">Comment offrir</p>
-          <h2 class="t-h1" id="titre-offrir-comment" data-titre>Une pièce, et la personne qui la reçoit.</h2>
-          <p>Ajoutez un modèle ou la box à votre commande. Au moment de finaliser, cochez « C’est un cadeau » : vous indiquez le nom de la personne, son téléphone si l’atelier doit la joindre, et un message à glisser dans le colis.</p>
-          <p>Le prix n’apparaît pas dans le colis si vous le demandez. La livraison peut se faire directement chez elle, à Abidjan ou ailleurs.</p>
+          <h2 class="t-h1" id="titre-offrir-comment" data-titre>Une pièce, <em>un message.</em></h2>
+          <p>À la commande, cochez « C’est un cadeau » et écrivez le message à glisser dans le colis.</p>
           <p class="encart-demo">Le contenu exact de la box et la possibilité de l’ajouter à une tenue restent à confirmer par Lacouture.</p>
         </div>
       </div>
@@ -45,10 +44,10 @@ export default {
 
     <section class="section fond-doux" aria-labelledby="titre-offrir-voir">
       <div class="conteneur">
-        <div class="tete"><p class="surtitre t-surtitre">Le coffret</p><h2 class="t-h1" id="titre-offrir-voir" data-titre>Noir, rigide, au monogramme rose.</h2></div>
+        <div class="tete"><p class="surtitre t-surtitre">Le coffret</p><h2 class="t-h1" id="titre-offrir-voir" data-titre>La box <em>noire.</em></h2></div>
         <div class="bande" style="grid-template-columns:repeat(2,1fr)">
-          <figure data-reveler><div class="media" data-image><img src="${img.boxTable}" alt="${esc(box.images[1].alt)}" loading="lazy"></div><figcaption>Posée sur la table, avant l’ouverture.</figcaption></figure>
-          <figure data-reveler><div class="media" data-image><img src="${img.boxOuverture}" alt="${esc(box.images[0].alt)}" loading="lazy"></div><figcaption>Le logo Lacouture sur le couvercle.</figcaption></figure>
+          <figure data-reveler><div class="media" data-image><img src="${img.boxTable}" alt="${esc(box.images[1].alt)}" loading="lazy"></div><figcaption>Avant l’ouverture.</figcaption></figure>
+          <figure data-reveler><div class="media" data-image><img src="${img.boxOuverture}" alt="${esc(box.images[0].alt)}" loading="lazy"></div><figcaption>Lacouture Abidjan, en rose sur le couvercle.</figcaption></figure>
         </div>
       </div>
     </section>`;

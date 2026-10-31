@@ -28,7 +28,7 @@ et l'accès clavier, et échoue sur toute erreur de console. Les captures vont d
 - `src/js/data/demo.js` contient **toutes les données de démonstration**. Le drapeau `DEMO`
   affiche un bandeau sur le site.
 - `src/js/motion/` regroupe GSAP : courbes maison, ouverture, couverture, apparitions,
-  micro-interactions et sceau de confirmation.
+  micro-interactions et étiquette de confirmation.
 - `src/js/views/` contient une vue par page. Le routeur (`router.js`) monte chaque vue dans
   un `gsap.context` et nettoie animations et ScrollTrigger à chaque navigation.
 
@@ -63,21 +63,34 @@ le message envoyé. Aucun prestataire de paiement n'est branché et aucun backen
 ## Écarts avec le dossier de conception
 
 1. **Mouvement au défilement.** Le dossier (C.9) exclut parallaxe et animations au défilement ;
-   la mission demande GSAP et ScrollTrigger. Le compromis retenu est sobre : apparitions
-   uniques (`once`), titres en lignes masquées, un fil de progression, et un très léger
-   glissement de photo réservé aux écrans à pointeur fin. Tout disparaît en mouvement réduit.
-2. **Bouton de commande.** D.7 prévoit « Payer 47 000 FCFA ». Le paiement étant hors périmètre,
-   le bouton devient « Préparer ma commande », avec un total indiqué comme indicatif.
+   la mission demande GSAP et ScrollTrigger, et la maquette de référence en use largement.
+   Le site garde des apparitions uniques (`once`) et des titres en lignes masquées, et ajoute
+   quelques effets liés au défilement : la photo de couverture glisse (pointeur fin seulement), le manifeste se
+   colore mot à mot, la photo de la Box se resserre. Tout disparaît en mouvement réduit.
+2. **Bouton de commande.** D.7 prévoit « Payer 47 000 FCFA » et la maquette de référence
+   ajoute une étape de paiement (Wave, Orange Money, MTN). Le paiement étant hors périmètre,
+   la commande compte trois étapes (Infos, Livraison, Envoi) et le bouton devient « Préparer
+   ma commande », avec un total indiqué comme indicatif.
 3. **Délai de réponse.** D.9 annonce une réponse « sous 48 h » pour le sur-mesure. Ce délai
    n'a pas été donné par Lacouture, il n'est donc promis nulle part.
-4. **Rose du logo.** Le site utilise le Rose Poudre de la charte (`#E8C5D4`) ; le SVG d'origine
+4. **Rose du logo.** Le site utilise le Rose Poudre de la charte (`#E6C3D3`) ; le SVG d'origine
    est en `#EEC6DA`. L'écart est invisible à l'œil, le fichier du logo n'a pas été modifié.
 5. **Transform et opacité.** Toutes les animations n'animent que `transform` et `opacity`, à
-   une exception près : le tracé du monogramme (ouverture et sceau) anime `stroke-dashoffset`
+   une exception près : le tracé du monogramme à l'ouverture anime `stroke-dashoffset`
    via DrawSVG, sur un seul petit SVG.
 6. **Réalisations.** Le dossier prévoit des photos de clientes avec prénom et occasion. Faute
    de ces informations, la galerie montre les publications de la maison avec des légendes
    descriptives, sans prénom inventé.
+7. **Étiquette de confirmation.** La maquette de référence affiche « Commande confirmée » et
+   « Payée via Wave ». Ici l'étiquette porte un « N° provisoire » et rappelle que la commande
+   reste à envoyer sur WhatsApp, puisque rien n'est payé ni transmis automatiquement.
+8. **Fuchsia.** Comme le veut la charte, le fuchsia reste rare : bouton de commande, étape en
+   cours et bouton d'envoi WhatsApp.
+9. **Photo de couverture en noir et blanc.** La couverture passe la photo en niveaux de gris
+   pour que le texte crème reste lisible, comme dans la maquette de référence.
+10. **Textes.** Le site reprend les rares textes publiés par Lacouture (bio Instagram, story
+    « About us », publications Box et Iconic) au lieu d'en écrire de nouveaux. Les textes
+    d'interface restent courts.
 
 ## Accessibilité
 

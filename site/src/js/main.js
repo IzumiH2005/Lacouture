@@ -12,6 +12,7 @@ import { icone } from './ui/icons.js';
 import { DEMO } from './data/demo.js';
 import { route, demarrer } from './router.js';
 import { rebondir } from './motion/micro.js';
+import { gsap, reduit } from './motion/core.js';
 
 import accueil from './views/accueil.js';
 import boutique from './views/boutique.js';
@@ -89,6 +90,18 @@ function coquille() {
     });
   }, { passive: true });
   ent.addEventListener('focusin', () => html.classList.remove('entete-cache'));
+
+  /* Le pied vit hors des vues : ses lettres montent la première fois qu'il entre dans l'écran. */
+  const lettresPied = document.querySelectorAll('.pied__mot .lettre');
+  if (!reduit() && 'IntersectionObserver' in window) {
+    gsap.set(lettresPied, { yPercent: 110 });
+    const obs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      obs.disconnect();
+      gsap.to(lettresPied, { yPercent: 0, duration: 1.2, stagger: 0.04, ease: 'couture' });
+    }, { threshold: 0.3 });
+    obs.observe($('.pied__mot'));
+  }
 }
 
 function lancer() {

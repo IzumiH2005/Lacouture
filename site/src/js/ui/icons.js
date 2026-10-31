@@ -15,6 +15,7 @@ const P = {
   camion: '<path d="M2.5 6h11v10h-11zM13.5 9.5h4l3 3.5V16h-7"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',
   aiguille: '<path d="M4 20L19 5"/><path d="M17.2 4.2a1.6 1.6 0 1 1 2.6 2.6"/><path d="M19 5c-4 1-9 5-11.5 10"/>',
   coche: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  horloge: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
   alerte: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v6M12 15.5v1.5"/>',
   maison: '<path d="M4 10.5L12 4l8 6.5V20H4z"/><path d="M10 20v-5h4v5"/>',
   copier: '<path d="M8 8h12v12H8z"/><path d="M16 8V4H4v12h4"/>',

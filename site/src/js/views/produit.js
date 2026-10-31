@@ -14,7 +14,7 @@ import { annoncer } from '../ui/toast.js';
 import { piegerFocus } from '../ui/panel.js';
 import { panier } from '../store.js';
 import { esc, sur, $, $$ } from '../util/dom.js';
-import { delai, prixTexte, dateLongue, ajouterJours } from '../util/format.js';
+import { delai, prixTexte } from '../util/format.js';
 import { lienWhatsApp } from '../util/whatsapp.js';
 import { gsap, ScrollTrigger, reduit } from '../motion/core.js';
 import { presser, choisirTaille, refuser } from '../motion/micro.js';
@@ -22,6 +22,12 @@ import { envoler } from '../motion/fly.js';
 import { titreEnLignes } from '../motion/reveal.js';
 import { railHtml, monterRail } from './accueil.js';
 import introuvable from './introuvable.js';
+
+/* Le dernier mot du nom passe en italique (affirmation, puis émotion). */
+const nomTitre = (nom) => {
+  const i = nom.lastIndexOf(' ');
+  return i < 0 ? esc(nom) : `${esc(nom.slice(0, i))} <em>${esc(nom.slice(i + 1))}</em>`;
+};
 
 const vues = (m, v) => (m.versions.find((x) => x.id === v) || m.versions[0]).images;
 
@@ -41,19 +47,22 @@ const blocTaille = (m) => {
   if (m.tailleUnique) {
     return `<div class="bloc">
       <div class="bloc__tete"><p class="t-h3">Taille unique</p></div>
-      <p class="t-petit t-doux">Coupe ample qui convient du ${marque.tailles}. Indiquez votre hauteur si vous souhaitez une longueur ajustée.</p>
       ${champ({ id: 'hauteur-unique', libelle: 'Votre hauteur en cm', type: 'number', facultatif: true, attrs: 'inputmode="numeric" min="120" max="210"' })}
     </div>`;
   }
   return `<fieldset class="bloc" data-bloc-taille>
-    <div class="bloc__tete"><legend class="t-h3">Taille</legend><button type="button" class="lien" data-guide>Guide des tailles</button></div>
-    <div class="tailles" role="group" aria-label="Choisir une taille">
-      ${m.tailles.map((t) => `<button type="button" class="taille" data-taille="${t}" aria-pressed="false"><span class="taille__fond" aria-hidden="true"></span><span>${t}</span></button>`).join('')}
-      <button type="button" class="taille" data-taille="mesures" aria-pressed="false" aria-controls="bloc-mesures"><span class="taille__fond" aria-hidden="true"></span><span>Sur mes mesures</span></button>
+    <div class="bloc__tete"><legend class="t-surtitre">Taille</legend><button type="button" class="lien" data-guide>Guide des tailles</button></div>
+    <div class="segment" role="group" aria-label="Taille standard ou mensurations" data-segment data-choix="0">
+      <span class="segment__indicateur" aria-hidden="true" data-segment-indicateur></span>
+      <button type="button" class="segment__choix" data-mode="standard" aria-pressed="true">Taille standard</button>
+      <button type="button" class="segment__choix" data-taille="mesures" aria-pressed="false" aria-controls="bloc-mesures">Mes mensurations</button>
     </div>
-    <p class="aide-taille" data-aide-taille aria-live="polite">Toutes les tailles sont confectionnées à la commande.</p>
+    <div class="tailles" role="group" aria-label="Choisir une taille" data-grille-tailles>
+      ${m.tailles.map((t) => `<button type="button" class="taille" data-taille="${t}" aria-pressed="false"><span class="taille__fond" aria-hidden="true"></span><span>${t}</span></button>`).join('')}
+    </div>
+    <p class="aide-taille" data-aide-taille aria-live="polite">${esc(marque.tailles)}.</p>
     <div class="mesures" id="bloc-mesures" hidden>
-      <p class="t-petit">Mesures du corps, en centimètres. L’atelier les vérifie avec vous avant de couper.</p>
+      <p class="t-petit">En centimètres. L’atelier les vérifie avec vous.</p>
       <div class="mesures__grille">
         ${champ({ id: 'm-poitrine', libelle: 'Poitrine', type: 'number', attrs: 'inputmode="numeric" min="60" max="180"' })}
         ${champ({ id: 'm-taille', libelle: 'Taille', type: 'number', attrs: 'inputmode="numeric" min="45" max="170"' })}
@@ -83,7 +92,6 @@ export default {
     const fam = familles.find((f) => f.id === m.famille);
     const v0 = m.versions[0];
     const autres = boutique.filter((x) => x.id !== m.id).sort((a, b) => (b.famille === m.famille) - (a.famille === m.famille)).slice(0, 6);
-    const livraisonDes = dateLongue(ajouterJours(new Date(), m.delai[1] + 1));
     return `<nav aria-label="Fil d’Ariane"><ol class="fil-ariane">
       <li><a href="#/boutique">Boutique</a></li>
       ${fam ? `<li><a href="#/boutique/${fam.id}">${fam.libelle}</a></li>` : '<li><a href="#/offrir">Offrir</a></li>'}
@@ -94,31 +102,25 @@ export default {
         <div class="fiche__info">
           <header class="fiche__entete">
             ${badgeDe(m) ? `<div>${badgeDe(m)}</div>` : ''}
-            <h1 class="t-produit" data-titre-fiche>${esc(m.nom)}</h1>
+            <p class="t-surtitre t-doux fiche__surtitre">${esc(fam ? fam.libelle : 'Offrir')} · Réf. ${m.ref}</p>
+            <h1 class="t-produit" data-titre-fiche>${nomTitre(m.nom)}</h1>
             ${blocPrix(m)}
-            ${m.promo ? `<p class="t-petit t-doux">Offre de lancement Iconic, ${m.promo.jusqua}.</p>` : ''}
-            <p class="fiche__ref">Réf. ${m.ref}</p>
+            ${m.promo ? `<p class="t-petit t-doux">Offre Iconic, ${m.promo.jusqua}.</p>` : ''}
           </header>
-          <p class="fiche__delai">${icone('aiguille')}<span>Confectionnée en ${delai(m.delai)} à l’atelier. Livraison possible vers le ${livraisonDes} si vous commandez aujourd’hui.</span></p>
           ${m.versions.length > 1 ? `<div class="bloc"><p class="t-h3">Couleur : <span data-version-nom>${v0.libelle}</span></p>
             <div class="versions" role="group" aria-label="Choisir une couleur">${m.versions.map((v, i) => `<button type="button" class="version" data-version="${v.id}" aria-pressed="${i === 0}" aria-label="${v.libelle}"><div class="media"><img src="${v.images[0].src}" alt=""></div></button>`).join('')}</div></div>` : ''}
           ${blocTaille(m)}
+          <div class="encart">${icone('horloge')}<div><p class="encart__titre">Confection : ${delai(m.delai)} <span class="badge badge--demo">Démo</span></p><p>À Cocody. Rien n’est payé en ligne.</p></div></div>
           <div class="bloc" data-zone-achat>
             <button type="button" class="bouton bouton--principal bouton--plein" data-ajouter>${roule('Ajouter à ma commande')}</button>
-            <a class="whatsapp lien" href="${lienWhatsApp(`Bonjour Lacouture, une question sur le modèle ${m.nom} (réf. ${m.ref}).`)}" target="_blank" rel="noopener">${glypheWhatsApp}<span>Une question ? Écrire à l’atelier sur WhatsApp</span></a>
+            <a class="whatsapp lien" href="${lienWhatsApp(`Bonjour Lacouture, une question sur le modèle ${m.nom} (réf. ${m.ref}).`)}" target="_blank" rel="noopener">${glypheWhatsApp}<span>Une question ? Écrire à l’atelier</span></a>
           </div>
-          <ul class="engagements" aria-label="Nos engagements">
-            <li class="engagement">${icone('aiguille')}<span>Coupée et cousue dans notre atelier de Cocody</span></li>
-            <li class="engagement">${icone('regle')}<span>En taille standard ou sur vos mesures</span></li>
-            <li class="engagement">${icone('calendrier')}<span>Paiement après confirmation de l’atelier, rien n’est payé en ligne</span></li>
-            <li class="engagement">${icone('camion')}<span>Livraison à Abidjan, hors Abidjan, ou retrait à l’atelier</span></li>
-          </ul>
           ${etiquette(m)}
           ${accordeon([
             { titre: 'Coupe et détails', contenu: `<p>${esc(m.coupe)}</p>` },
             { titre: 'Tissus et imprimés', contenu: `<blockquote class="t-italique">« ${esc(marque.substitution)} »</blockquote><p class="t-petit t-doux">Règle annoncée par Lacouture sur Instagram.</p>` },
             { titre: 'Livraison et retrait', contenu: `<ul class="regles">${demoLivraison.map((l) => `<li><span>${l.libelle} : ${l.prix ? prixTexte(l.prix) : 'gratuit'}. ${l.detail}.</span></li>`).join('')}</ul><p class="encart-demo">Tarifs provisoires, à confirmer par l’atelier.</p>` },
-            { titre: 'Paiement', contenu: '<p>Aucun paiement n’est demandé sur ce site. Vous transmettez votre commande, l’atelier la confirme puis vous indique comment régler.</p>' },
+            { titre: 'Paiement', contenu: '<p>Rien n’est payé sur ce site. L’atelier confirme votre commande, puis vous dit comment régler.</p>' },
           ])}
         </div>
       </div>
@@ -181,29 +183,46 @@ export default {
       } });
     }));
 
-    /* Tailles. */
+    /* Tailles : le segment bascule entre la grille standard et les mensurations. */
+    const segment = racine.querySelector('[data-segment]');
+    const grille = racine.querySelector('[data-grille-tailles]');
+    const poserSegment = (mesure) => {
+      segment.dataset.choix = mesure ? '1' : '0';
+      $$('.segment__choix', segment).forEach((x, k) => x.setAttribute('aria-pressed', String(k === (mesure ? 1 : 0))));
+      if (!reduit()) gsap.fromTo('[data-segment-indicateur]', { xPercent: mesure ? 0 : 100 }, { xPercent: mesure ? 100 : 0, duration: 0.5, ease: 'couture', clearProps: 'transform' });
+    };
     const choisir = (b) => {
+      const surMesure = b.dataset.taille === 'mesures';
       const ancienne = racine.querySelector('.taille[aria-pressed="true"]');
-      if (ancienne === b) return;
+      if (etat.taille === b.dataset.taille) return;
+      if (surMesure !== (etat.taille === 'mesures')) poserSegment(surMesure);
       ancienne?.setAttribute('aria-pressed', 'false');
-      b.setAttribute('aria-pressed', 'true');
-      choisirTaille(b, ancienne); presser(b);
+      if (!surMesure) { b.setAttribute('aria-pressed', 'true'); choisirTaille(b, ancienne); }
+      presser(b);
       etat.taille = b.dataset.taille;
       aide.dataset.alerte = 'false';
-      const surMesure = etat.taille === 'mesures';
       const etaitOuvert = !mesures.hidden;
       mesures.hidden = !surMesure;
-      aide.textContent = surMesure ? 'Indiquez vos mesures ci-dessous, ou demandez à être rappelée.' : `Taille ${etat.taille} choisie.`;
+      grille.hidden = surMesure;
+      aide.textContent = surMesure ? 'Indiquez vos mesures, ou demandez à être rappelée.' : `Taille ${etat.taille} choisie.`;
       if (surMesure && !etaitOuvert && !reduit()) gsap.from(mesures.children, { y: -8, opacity: 0, duration: 0.4, stagger: 0.05, ease: 'couture', clearProps: 'all' });
+      ScrollTrigger.refresh();
+    };
+    const modeStandard = (b) => {
+      if (etat.taille !== 'mesures') return;
+      poserSegment(false); presser(b);
+      etat.taille = null; mesures.hidden = true; grille.hidden = false;
+      aide.textContent = `${marque.tailles}.`;
       ScrollTrigger.refresh();
     };
     if (bloc) {
       off.push(sur(bloc, 'click', '[data-taille]', (e, b) => choisir(b)));
+      off.push(sur(bloc, 'click', '[data-mode="standard"]', (e, b) => modeStandard(b)));
       off.push(sur(bloc, 'click', '[data-guide]', (e, b) => ouvrirGuide(b)));
       /* Navigation au clavier entre les cases avec les flèches. */
-      off.push(sur(bloc, 'keydown', '[data-taille]', (e, b) => {
+      off.push(sur(bloc, 'keydown', '.taille', (e, b) => {
         if (!['ArrowRight', 'ArrowLeft'].includes(e.key)) return;
-        const cases = $$('[data-taille]', bloc); const i = cases.indexOf(b);
+        const cases = $$('.taille', bloc); const i = cases.indexOf(b);
         cases[(i + (e.key === 'ArrowRight' ? 1 : cases.length - 1)) % cases.length].focus();
         e.preventDefault();
       }));
@@ -236,9 +255,9 @@ export default {
       if (m.tailleUnique) { const h = $('#hauteur-unique', racine).value.trim(); return h ? { hauteur: Number(h) } : {}; }
       if (!etat.taille) {
         aide.dataset.alerte = 'true';
-        aide.textContent = 'Choisissez une taille, ou « Sur mes mesures ».';
+        aide.textContent = 'Choisissez une taille, ou vos mensurations.';
         refuser(racine.querySelector('.tailles'));
-        racine.querySelector('[data-taille]').focus();
+        racine.querySelector('.taille').focus();
         return null;
       }
       if (etat.taille === 'mesures') return lireMesures();

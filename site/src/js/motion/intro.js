@@ -1,6 +1,6 @@
 /* Ouverture (une fois par session, page d'accueil seulement, passable).
-   1. le monogramme se trace en Rose Fil ; 2. l'aplat Encre se pose ; 3. le mot monte ;
-   4. le rideau Ivoire se lève et laisse place à la couverture. */
+   Sur fond Encre : 1. le monogramme se trace en Rose poudré ; 2. l'aplat rose se pose ;
+   3. le mot Crème monte ; 4. le rideau se lève sur la couverture sombre. */
 import { gsap, reduit } from './core.js';
 import { fragment } from '../util/dom.js';
 import { monogrammeTrace, motSvg } from '../ui/logo.js';

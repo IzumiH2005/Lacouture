@@ -1,9 +1,8 @@
-/* Bodoni Moda (titres) et Jost (interface), sous licence SIL OFL, embarquées en sous-ensemble latin. */
+/* Bodoni Moda (titres, axe de taille optique) et Jost (texte, axe de graisse 300 à 500),
+   sous licence SIL OFL, embarquées en sous-ensemble latin. Bodoni reste toujours en 400. */
 @font-face { font-family: "Bodoni Moda"; font-style: normal; font-weight: 400; font-display: swap;
-  src: url("../../node_modules/@fontsource/bodoni-moda/files/bodoni-moda-latin-400-normal.woff2") format("woff2"); }
+  src: url("../../node_modules/@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-opsz-normal.woff2") format("woff2-variations"); }
 @font-face { font-family: "Bodoni Moda"; font-style: italic; font-weight: 400; font-display: swap;
-  src: url("../../node_modules/@fontsource/bodoni-moda/files/bodoni-moda-latin-400-italic.woff2") format("woff2"); }
-@font-face { font-family: "Jost"; font-style: normal; font-weight: 400; font-display: swap;
-  src: url("../../node_modules/@fontsource/jost/files/jost-latin-400-normal.woff2") format("woff2"); }
-@font-face { font-family: "Jost"; font-style: normal; font-weight: 500; font-display: swap;
-  src: url("../../node_modules/@fontsource/jost/files/jost-latin-500-normal.woff2") format("woff2"); }
+  src: url("../../node_modules/@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-opsz-italic.woff2") format("woff2-variations"); }
+@font-face { font-family: "Jost"; font-style: normal; font-weight: 300 500; font-display: swap;
+  src: url("../../node_modules/@fontsource-variable/jost/files/jost-latin-wght-normal.woff2") format("woff2-variations"); }
