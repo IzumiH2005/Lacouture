@@ -1,0 +1,8 @@
+# Probleme 7807
+# Problem7807ExempleBadRequestJSON:
+summary: "Problème format invalide"
+value:
+  type: "about:blank"
+  title: "Bad Request"
+  status: 400
+  detail: "Format du message invalide"

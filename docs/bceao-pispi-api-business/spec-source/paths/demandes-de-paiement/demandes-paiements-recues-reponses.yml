@@ -1,0 +1,73 @@
+# accepter ou rejeter une demande de paiement
+parameters:
+  - name: end2endId
+    in: path
+    description: L'identifiant de la demande de paiement reçue
+    required: true
+    schema:
+      type: string
+
+put:
+  tags:
+    - DemandesDePaiementRecues
+  summary: Accepter ou rejeter la demande
+  security:
+    - OAuth2: [demande_paiement_reponse.write]
+  description: |
+    Ce point de terminaison permet au client d'accepter ou de rejeter une demande de paiement reçue.
+
+    Le business peut accepter ou refuser la demande de paiement :
+    - `accepter: true` : Accepte la demande de paiement (un paiement sera envoyé)
+    - `accepter: false` : Refuse la demande de paiement
+
+    **Idempotence** : Cet endpoint est idempotent.
+    - Premier appel avec `accepter: true` → Accepte la demande, retourne `200 OK {statut: "ENVOYE"}`
+    - Appels suivants avec `accepter: true` → Retourne `200 OK` avec l'état actuel - idempotent
+    - Premier appel avec `accepter: false` → Rejette la demande, retourne `200 OK {statut: "REJETE"}`
+    - Appels suivants avec `accepter: false` → Retourne `200 OK {statut: "REJETE"}` (idempotent)
+    - `accepter: true` après `accepter: false` → Retourne `403 Forbidden` (déjà rejetée)
+    - `accepter: false` après `accepter: true` → Retourne `403 Forbidden` (déjà acceptée)
+  operationId: demandePaiementRecueRepondre
+  requestBody:
+    description: Réponse à la demande de paiement reçue.
+    content:
+      application/json:
+        schema:
+          $ref: "../../schemas/demandes-de-paiement/DemandePaiementReponseRequest.yml"
+        examples:
+          accepte:
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementReponseRequeteAccepter.yml"
+          rejete:
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementReponseRequeteRejeter.yml"
+    required: true
+  responses:
+    "200":
+      description: Opération effectuée avec succès
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/demandes-de-paiement/DemandePaiementReponse.yml"
+          examples:
+            accepte:
+              $ref: "../../examples/demandes-de-paiement/DemandePaiementReponseReponseAcceptation.yml"
+            rejete:
+              $ref: "../../examples/demandes-de-paiement/DemandePaiementReponseRejetDemandeurInconnu.yml"
+    "403":
+      description: Interdiction d'envoyer la réponse à la demande de paiement (déjà traitée ou déjà rejetée)
+      content:
+        application/problem+json:
+          schema:
+            $ref: "../../schemas/commons/Problem7807.yml"
+          examples:
+            deja-accepte:
+              $ref: "../../examples/demandes-de-paiement/DemandePaiementConfirmationImpossibleDejaEnvoye.yml"
+            deja-rejete:
+              $ref: "../../examples/demandes-de-paiement/DemandePaiementConfirmationImpossibleDejaAnnule.yml"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "404":
+      $ref: "../../responses/commons/RessourceInexistant.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"

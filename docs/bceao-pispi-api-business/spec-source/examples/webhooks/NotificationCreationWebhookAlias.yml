@@ -1,0 +1,4 @@
+summary: "Un webhook pour recevoir les notifications concernant un alias de compte"
+value:
+  callbackUrl: "https://businessmerchant.com/api/piz/webhooks/"
+  alias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"

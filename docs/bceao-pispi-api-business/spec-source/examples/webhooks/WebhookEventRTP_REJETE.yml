@@ -1,0 +1,13 @@
+summary: Notification de demande de paiement rejetée
+value:
+  data:
+    - evCode: RTP_REJETE
+      evDate: "2023-02-21T15:30:01.250Z"
+      txId: "23552722"
+      montant: 2000000
+      client: Soro & Freres
+      alias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+      end2endId: ESNB00120230221153554KXvozkpNvhUk9e
+      motif: AM02
+  meta:
+    total: 1

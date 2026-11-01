@@ -1,0 +1,31 @@
+# Problem RFC 7807
+# Problem7807:
+type: object
+properties:
+  type:
+    type: string
+    description: Référence URI qui identifie le type de problème
+    example: about:blank
+  title:
+    type: string
+    description: Un bref résumé du problème
+    example: Bad Request
+  status:
+    type: integer
+    description: Le code d'état HTTP pour cette occurrence du problème
+    example: 400
+  detail:
+    type: string
+    description: Explication spécifique à cette occurrence du problème
+  invalid-params:
+    type: array
+    description: Liste des paramètres invalides
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nom du paramètre invalide
+        reason:
+          type: string
+          description: Raison de l'invalidité du paramètre

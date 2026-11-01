@@ -1,0 +1,4 @@
+summary: "rejeter la demande de paiement"
+value:
+  decision: false
+  raison: AM09

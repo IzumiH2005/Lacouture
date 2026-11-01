@@ -1,0 +1,123 @@
+# path => /paiements/{end2endId}/annulations/reponses
+# Répondre à une demande d'annulation de paiement
+parameters:
+  - name: end2endId
+    in: path
+    description: L'identifiant unique de bout en bout de la transaction
+    required: true
+    schema:
+      type: string
+put:
+  tags:
+    - DemandeAnnulation
+  summary: Répondre à une demande d'annulation
+  security:
+    - OAuth2: [demande_annulation_reponse.write]
+  description: |
+    Ce point de terminaison permet au business de répondre à une demande d'annulation de paiement.
+
+    Le business peut accepter ou refuser la demande d'annulation :
+    - `decision: true` : Accepte la demande d'annulation (le business effectuera un retour de fonds)
+    - `decision: false` : Refuse la demande d'annulation
+
+    **Idempotence** : Cet endpoint est idempotent.
+    - Premier appel avec `decision: true` → Accepte la demande, retourne `200 OK {statut: "ACCEPTE"}`
+    - Appels suivants avec `decision: true` → Retourne `200 OK` avec l'état actuel - idempotent
+    - Premier appel avec `decision: false` → Refuse la demande, retourne `200 OK {statut: "REJETE"}`
+    - Appels suivants avec `decision: false` → Retourne `200 OK {statut: "REJETE"}` (idempotent)
+    - `decision: true` après `decision: false` → Retourne `403 Forbidden` (déjà refusée)
+    - `decision: false` après `decision: true` → Retourne `403 Forbidden` (déjà acceptée)
+
+  operationId: demandeAnnulationRepondre
+  requestBody:
+    description: La réponse du business à la demande d'annulation
+    content:
+      application/json:
+        schema:
+          $ref: "../../schemas/paiement/PaiementAnnulationReponseRequest.yml"
+        examples:
+          accepter:
+            $ref: "../../examples/paiement/PaiementAnnulationReponseRequestAccepter.yml"
+          refuser:
+            $ref: "../../examples/paiement/PaiementAnnulationReponseRequestRejeter.yml"
+    required: true
+  responses:
+    "200":
+      description: |
+        Réponse à la demande d'annulation enregistrée.
+
+        La réponse retourne l'objet `Paiement` complet avec les champs mis à jour selon la décision :
+
+        **En cas d'acceptation (`decision: true`)** :
+        - `annulationStatut` : Mis à jour pour indiquer l'acceptation
+        - `annulationDateReponse` : Date et heure de la réponse à la demande d'annulation
+        - Un retour de fonds est automatiquement initié par le participant, donc les champs suivants sont également renseignés :
+          - `retourStatut` : Statut du retour de fonds (ex: `INITIE`, `ENVOYE`, `IRREVOCABLE`)
+          - `retourStatutRaison` : Raison du statut du retour de fonds
+          - `retourDateDemande` : Date de création du retour de fonds
+          - `retourDateIrrevocabilite` : Date à laquelle le retour de fonds est irrévocable (si applicable)
+
+        **En cas de rejet (`decision: false`)** :
+        - `annulationStatut` : Mis à jour pour indiquer le rejet (ex: `REJETE`)
+        - `annulationDateReponse` : Date et heure de la réponse à la demande d'annulation
+        - Les champs `retour*` ne sont **pas** renseignés car aucun retour de fonds n'est effectué
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/paiement/Paiement.yml"
+          examples:
+            acceptee:
+              $ref: "../../examples/paiement/PaiementAnnulationReponseReponseAcceptee.yml"
+            refusee:
+              $ref: "../../examples/paiement/PaiementAnnulationReponseReponseRefusee.yml"
+    "403":
+      description: Opération interdite
+      content:
+        application/problem+json:
+          schema:
+            $ref: "../../schemas/commons/Problem7807.yml"
+          examples:
+            decision-true-apres-false:
+              summary: "Tentative d'acceptation après refus"
+              value:
+                type: "about:blank"
+                title: "Forbidden"
+                status: 403
+                detail: "Impossible d'accepter une demande d'annulation déjà refusée"
+            decision-false-apres-true:
+              summary: "Tentative de refus après acceptation"
+              value:
+                type: "about:blank"
+                title: "Forbidden"
+                status: 403
+                detail: "Impossible de refuser une demande d'annulation déjà acceptée"
+            timeout-depasse:
+              summary: "Délai de réponse dépassé"
+              value:
+                type: "about:blank"
+                title: "Forbidden"
+                status: 403
+                detail: "Le délai de réponse de 7 jours a été dépassé"
+    "404":
+      description: Demande d'annulation non trouvée
+      content:
+        application/problem+json:
+          schema:
+            $ref: "../../schemas/commons/Problem7807.yml"
+          examples:
+            demande-inexistante:
+              summary: "Demande d'annulation inexistante"
+              value:
+                type: "about:blank"
+                title: "Not Found"
+                status: 404
+                detail: "Demande d'annulation inexistante ou déjà traitée"
+                invalid-params:
+                  - name: end2endId
+                    reason: La demande d'annulation avec cet identifiant n'existe pas ou a déjà été traitée
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"

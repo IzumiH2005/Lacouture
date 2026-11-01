@@ -1,0 +1,94 @@
+parameters:
+  - name: numero
+    in: path
+    description: Le numéro de compte sur lequel porte la demande
+    required: true
+    schema:
+      type: string
+
+# Demande de création d'alias
+post:
+  tags:
+    - Alias
+  summary: Créer un alias
+  security:
+    - OAuth2: [alias.write]
+  description: |
+    Le répertoire des alias de compte permet au business de créer les types d'alias suivants :
+    - Une adresse de paiement, codifiée par SHID: cet alias est obtenu par génération d'une clé aléatoire unique sur 36 positions par le système.
+    - Un identifiant de compte marchand, codifié par MCOD: ce type d'alias est prévu pour supporter les paiements par code USSD.
+
+    Un client business peut créer plusieurs alias pour un compte donné.
+
+    Une limite de 20 alias par compte est fixée par défaut. Cette limite peut être augmentée selon les besoins du client.
+  operationId: aliasCreer
+  requestBody:
+    description: Données pour la création d'alias.
+    content:
+      application/json:
+        schema:
+          $ref: "../../schemas/compte/AliasCreationRequest.yml"
+        examples:
+          alias-SHID:
+            $ref: "../../examples/compte/AliasCreationRequestSHID.yml"
+          alias-MCOD:
+            $ref: "../../examples/compte/AliasCreationRequestMCOD.yml"
+    required: true
+  responses:
+    "200":
+      description: Opération effectuée avec succès
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/compte/AliasCreationReponse.yml"
+          examples:
+            alias-SHID:
+              $ref: "../../examples/compte/AliasCreationReponseSHID.yml"
+            alias-MCOD:
+              $ref: "../../examples/compte/AliasCreationReponseMCOD.yml"
+    "403":
+      description: Opération interdite
+      content:
+        application/problem+json:
+          schema:
+            $ref: "../../schemas/commons/Problem7807.yml"
+          examples:
+            limite-alias:
+              $ref: "../../examples/compte/AliasCreationReponseDepassementLimit.yml"
+    "400":
+      $ref: "../../responses/commons/FormatInvalide.yml"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "404":
+      $ref: "../../responses/commons/RessourceInexistant.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"
+
+# Lister les alias d'un compte
+get:
+  tags:
+    - Alias
+  summary: Lister les alias
+  security:
+    - OAuth2: [alias.read]
+  description: |
+    Ce point de terminaison permet de consulter la liste des alias d'un compte.
+  operationId: aliasLister
+  responses:
+    "200":
+      description: Succès de l'opération
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/compte/AliasReponseListe.yml"
+          examples:
+            liste-alias:
+              $ref: "../../examples/compte/AliasReponseListe.yml"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"

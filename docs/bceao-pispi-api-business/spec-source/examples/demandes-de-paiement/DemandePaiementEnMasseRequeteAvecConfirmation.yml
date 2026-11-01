@@ -1,0 +1,25 @@
+summary: "Demande de paiement en masse (avec confirmation)"
+value:
+  instructionId: "FACTURES-2025-01-1"
+  payeAlias: "8b1b2499-3e50-435b-b757-ac7a83d8aa7f"
+  confirmation: true
+  motif: "Factures mensuelles - Janvier 2025"
+  transactions:
+    - txId: "FAC-2025-001"
+      payeurAlias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+      montant: 50000
+      dateLimitePaiement: "2025-01-31T23:59:59.999Z"
+      refDocNumero: "INV-2025-001"
+      refDocType: "CINV"
+    - txId: "FAC-2025-002"
+      payeurAlias: "s03b2499-3e50-435b-b757-ac7a83d8aa8c"
+      montant: 75000
+      dateLimitePaiement: "2025-01-31T23:59:59.999Z"
+      refDocNumero: "INV-2025-002"
+      refDocType: "CINV"
+    - txId: "FAC-2025-003"
+      payeurAlias: "t03b2499-3e50-435b-b757-ac7a83d8aa8c"
+      montant: 120000
+      dateLimitePaiement: "2025-01-31T23:59:59.999Z"
+      refDocNumero: "INV-2025-003"
+      refDocType: "CINV"

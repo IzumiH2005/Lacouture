@@ -1,0 +1,298 @@
+# path => /paiements-envoyes
+# Transfert de fonds
+post:
+  tags:
+    - PaiementEnvoye
+  summary: Envoyer un paiement
+  security:
+    - OAuth2: [paiement.write]
+  description: |
+    Ce point de terminaison permet au business d'effectuer des paiements.
+
+    Le destinataire du paiement est identifié de façon **exclusive** par l'un des parcours suivants :
+    - **Alias** : champ `payeAlias`
+    - **IBAN** (banque) : champs `payeIban` et `payeParticipant`
+    - **Numéro de compte** (OTHER, tout participant y compris une banque) : champs `payeOther` et `payeParticipant`
+
+    Dans le cas ou le business veut faire un transfert par IBAN ou par numéro de compte : Utiliser `GET /participants` pour obtenir le code membre du participant (`payeParticipant`).
+
+    Seules les banques (`codeBanque` présent dans `GET /participants`) reçoivent un paiement par IBAN. Elles reçoivent également par numéro de compte, car une banque peut détenir un compte qui n'est pas un IBAN. Les autres participants (EME, SFD, établissement de paiement) ne reçoivent que par numéro de compte.
+
+    Les parcours IBAN et numéro de compte sont **inter participant** : `payeParticipant` désigne nécessairement un participant autre que celui du business émetteur. Un transfert au sein du même participant s'effectue par alias.
+
+    Le business peut définir le champ `confirmation` à `true` pour demander une validation en deux étapes :
+    le PSP retournera d'abord le résultat de la vérification du bénéficiaire (nom et pays),
+    puis attendra une confirmation explicite avant d'exécuter le paiement via
+    l'endpoint `PUT /paiements-envoyes/{txId}/confirmations`.
+    Ce mécanisme s'applique aux trois parcours (alias, IBAN, numéro de compte).
+
+    **Timeout de confirmation** : Si le business demande une confirmation, il dispose de **24 heures** pour confirmer. Passé ce délai, la demande expire automatiquement.
+  operationId: paiementCreer
+  requestBody:
+    description: |
+      Données du paiement. Fournir le montant, l'alias du payeur, et l'identification exclusive
+      du destinataire (alias **ou** IBAN + participant **ou** numéro de compte + participant).
+    content:
+      application/json:
+        schema:
+          $ref: "../../schemas/paiement/PaiementImmediatRequest.yml"
+        examples:
+          sans-confirmation:
+            $ref: "../../examples/paiement/PaiementImmediatRequeteCasSansConfirmation.yml"
+          avec-confirmation:
+            $ref: "../../examples/paiement/PaiementImmediatRequeteCasAvecConfirmation.yml"
+          iban-sans-confirmation:
+            $ref: "../../examples/paiement/PaiementImmediatRequeteIbanSansConfirmation.yml"
+          iban-avec-confirmation:
+            $ref: "../../examples/paiement/PaiementImmediatRequeteIbanAvecConfirmation.yml"
+          compte-sans-confirmation:
+            $ref: "../../examples/paiement/PaiementImmediatRequeteCompteSansConfirmation.yml"
+    required: true
+  responses:
+    "200":
+      description: |
+        Paiement traité. Le champ `statut` indique le résultat :
+        - `INITIE` : En attente de confirmation (si `confirmation: true`)
+        - `ENVOYE` : Paiement envoyé avec succès (si `confirmation: false`)
+        - `REJETE` : Paiement rejeté. Le champ `statutRaison` contient le code d'erreur :
+          - `DU03` : txId dupliqué (déjà utilisé)
+          - `BE23` : Bénéficiaire invalide (alias, IBAN ou numéro de compte)
+          - `AC01` : Compte inexistant chez le participant destinataire (parcours IBAN / numéro de compte uniquement)
+          - `AB05` : Timeout — le participant n'a pas répondu à la vérification d'identité (parcours IBAN / numéro de compte uniquement)
+          - Autres codes ISO 20022
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/paiement/PaiementImmediatReponse.yml"
+          examples:
+            sans-confirmation:
+              $ref: "../../examples/paiement/PaiementImmediatReponseCasSansConfirmation.yml"
+            avec-confirmation:
+              $ref: "../../examples/paiement/PaiementImmediatReponseCasAvecConfirmation.yml"
+            iban-sans-confirmation:
+              $ref: "../../examples/paiement/PaiementImmediatReponseIbanSansConfirmation.yml"
+            iban-avec-confirmation:
+              $ref: "../../examples/paiement/PaiementImmediatReponseIbanAvecConfirmation.yml"
+            compte-sans-confirmation:
+              $ref: "../../examples/paiement/PaiementImmediatReponseCompteSansConfirmation.yml"
+            rejete-txid-duplique:
+              $ref: "../../examples/paiement/PaiementImmediatRejeteDU03.yml"
+            rejete-alias-invalide:
+              $ref: "../../examples/paiement/PaiementImmediatRejeteBE23.yml"
+            rejete-iban-invalide:
+              $ref: "../../examples/paiement/PaiementImmediatRejeteBE23Iban.yml"
+            rejete-compte-inexistant:
+              $ref: "../../examples/paiement/PaiementImmediatRejeteAC01.yml"
+            rejete-timeout-verification:
+              $ref: "../../examples/paiement/PaiementImmediatRejeteAB05.yml"
+    "403":
+      description: Interdiction d'effectuer le paiement (erreurs métier non-retriables)
+      content:
+        application/problem+json:
+          schema:
+            $ref: "../../schemas/commons/Problem7807.yml"
+          examples:
+            montant-invalide:
+              $ref: "../../examples/paiement/PaiementImmediatRefuseMontantInvalide.yml"
+    "400":
+      $ref: "../../responses/commons/FormatInvalide.yml"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"
+
+# consulter les ordres de paiement avec des parametres de filtres
+get:
+  tags:
+    - PaiementEnvoye
+  summary: Lister les paiements
+  security:
+    - OAuth2: [paiement.read]
+  description: Ce point de terminaison permet de lister les paiements effectués par le client.
+  operationId: paiementEnvoyeLister
+  parameters:
+    # Compte débiteur
+    - name: payeurAlias
+      in: query
+      schema:
+        type: string
+        title: alias du compte débité
+        description: >-
+          Recherche et retourne les paiement immédiats dont le compte spécifié est débiteur (payeur)
+    - name: payeurCompte
+      in: query
+      schema:
+        type: string
+        title: numéro de compte du client payeur
+
+    # Destinataire / Client payé
+    - name: payeAlias
+      in: query
+      schema:
+        type: string
+        title: alias de compte du client payé / bénéficiaire
+        description: >-
+          Recherche et retourne les paiement immédiats envoyées à un bénéficiaire (client payé)
+
+    # Date Envoi
+    - name: dateEnvoi
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+
+    # Date Irrevocabilite
+    - name: dateIrrevocabilite
+      in: query
+      schema:
+        type: string
+        format: date-time
+        title: Date d'irrévocabilité du paiement
+
+    # Statut
+    - name: statut
+      in: query
+      schema:
+        type: string
+        enum: ["INITIE", "ANNULE", "ENVOYE", "IRREVOCABLE", "REJETE"]
+        title: Statut du paiement
+
+    # Categorie
+    - name: categorie
+      in: query
+      schema:
+        type: string
+        title: Catégorie de paiement / Canal de paiement
+        enum:
+          - "631"
+          - "000"
+          - "400"
+          - "733"
+          - "300"
+          - "999"
+          - "500"
+          - "521"
+          - "401"
+        description: |
+          La catégorie du paiement / Canal de paiement
+          - `631` Demande de paiement provenant d'un particulier
+          - `000` Paiement par QR Code Statique
+          - `400` Paiement par QR Code Dynamique
+          - `733` Ordre de paiement via l'API Business
+          - `300` Via le canal USSD
+          - `999` Ordre de transfert bancaire
+          - `500` Demande de Paiement sur site
+          - `521` Demande de Paiement e-commerce
+          - `401` Autres demandes de paiement de facture
+
+    # TxId
+    - name: txId
+      in: query
+      schema:
+        type: string
+        title: TxId
+        description: Identifiant de la transaction
+
+    # Montant Achat (Rechercher les PICO)
+    - name: montantAchat
+      in: query
+      schema:
+        type: number
+        title: Montant de l'achat
+
+    # Montant Retrait (Rechercher les PICASH et PICO)
+    - name: montantRetrait
+      in: query
+      schema:
+        type: number
+        title: Montant du retrait
+
+    # Motif
+    - name: motif
+      in: query
+      schema:
+        type: string
+        title: Motif du paiement
+
+    # Ref Doc Type
+    - name: refDocType
+      in: query
+      schema:
+        type: string
+        title: Type de document justificatif
+        description: Recherche les enregistrements en fonction du type de document justificatif.
+
+    # Instruction Id
+    - name: instructionId
+      in: query
+      schema:
+        type: string
+        title: Instruction Id
+        description: Identifiant de la demande de paiement en masse
+
+    # Demandes d'annulation
+    - name: annulationStatut
+      in: query
+      schema:
+        type: string
+        title: Statut de la demande d'annulation
+
+    # annulationMotif
+    - name: annulationMotif
+      in: query
+      schema:
+        type: string
+        title: Motif de la demande d'annulation
+        description: Permet de rechercher les demandes d'annulation
+
+    # retourStatut
+    - name: retourStatut
+      in: query
+      schema:
+        type: string
+        title: Statut du retour de fonds
+        description: Permet de rechercher les retours de fonds
+
+    # Pagination
+    - name: page
+      in: query
+      schema:
+        type: string
+        title: Page
+        description: Identifiant de la page
+    - name: size
+      in: query
+      schema:
+        type: string
+        title: Taille de la page
+        description: Nombre d'éléments à retourner
+    - name: sort
+      in: query
+      schema:
+        type: string
+        title: Triage
+        description: Trie les éléments selon le champ spécifié
+
+    # Liste de champs à retourner
+    - $ref: "../../parameters/Champs.yml"
+  responses:
+    "200":
+      description: Succès de l'opération
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/paiement/PaiementListe.yml"
+          examples:
+            paiements-envoyes:
+              $ref: "../../examples/paiement/PaiementListeEnvoyes.yml"
+            paiements-envoyes-bulk:
+              $ref: "../../examples/paiement/PaiementListeEnvoyesBulk.yml"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"

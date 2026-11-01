@@ -1,0 +1,35 @@
+parameters:
+  - name: numero
+    in: path
+    description: Le numéro de compte
+    required: true
+    schema:
+      type: string
+  - name: cle
+    in: path
+    description: La cle de l'alias
+    required: true
+    schema:
+      type: string
+
+# supprimer un alias
+delete:
+  tags:
+    - Alias
+  summary: Supprimer un alias
+  security:
+    - OAuth2: [alias.delete]
+  description: |
+    Le client peut supprimer à tout moment un alias de compte.
+  operationId: aliasSupprimer
+  responses:
+    "204":
+      description: Opération effectué avec succès
+    "404":
+      $ref: "../../responses/commons/RessourceInexistant.yml"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"

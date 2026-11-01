@@ -1,0 +1,14 @@
+summary: "Paiement par numéro de compte envoyé"
+value:
+  txId: "23552725"
+  payeurAlias: "8b1b2499-3e50-435b-b757-ac7a83d8aa7f"
+  payeOther: "+221777777777"
+  payeParticipant: "CIC042"
+  montant: 75000
+  statut: ENVOYE
+  confirmation: false
+  payeNom: "Client Monnaie Electronique"
+  payePays: "CI"
+  dateDemande: "2023-02-21T15:30:01.250Z"
+  dateConfirmation: "2023-02-21T15:30:01.250Z"
+  end2endId: "ECIE04220230221153554KXvozkpNvhUk9g"

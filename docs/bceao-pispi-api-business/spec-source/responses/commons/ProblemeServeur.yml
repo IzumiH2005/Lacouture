@@ -1,0 +1,10 @@
+# 503
+# ProblemeServeur:
+description: Erreur inattendue du serveur
+content:
+  application/problem+json:
+    schema:
+      $ref: "../../schemas/commons/Problem7807.yml"
+    examples:
+      exemple:
+        $ref: "../../examples/commons/Problem7807ExempleInternalServerErrorJSON.yml"

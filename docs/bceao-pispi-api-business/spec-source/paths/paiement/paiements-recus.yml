@@ -1,0 +1,166 @@
+# path => /paiements-recus
+# Consulter les paiements reçus avec des paramètres de filtres
+get:
+  tags:
+    - PaiementRecu
+  summary: Lister les paiements reçus
+  security:
+    - OAuth2: [paiement.read]
+  description: Ce point de terminaison permet de lister les paiements reçus par l'entreprise.
+  operationId: paiementRecuLister
+  parameters:
+    # Destinataire / Client payé
+    - name: payeAlias
+      in: query
+      schema:
+        type: string
+        title: alias de compte du client payé / bénéficiaire
+        description: >-
+          Recherche et retourne les paiement immédiats envoyées à un bénéficiaire (client payé)
+    - name: payeCompte
+      in: query
+      schema:
+        type: string
+        title: numéro de compte du client payé
+
+    # Compte débiteur
+    - name: payeurAlias
+      in: query
+      schema:
+        type: string
+        title: alias du compte débité
+        description: >-
+          Recherche et retourne les paiement immédiats dont le compte spécifié est débiteur (payeur)
+
+    # Date Irrevocabilite
+    - name: dateIrrevocabilite
+      in: query
+      schema:
+        type: string
+        format: date-time
+        title: Date d'irrévocabilité du paiement
+
+    # Categorie
+    - name: categorie
+      in: query
+      schema:
+        type: string
+        title: Catégorie de paiement / Canal de paiement
+        enum:
+          - "000"
+          - "400"
+          - "733"
+          - "300"
+          - "999"
+          - "500"
+          - "521"
+          - "401"
+        description: |
+          La catégorie du paiement / Canal de paiement
+          - `000` Paiement par QR Code Statique
+          - `400` Paiement par QR Code Dynamique
+          - `733` Ordre de paiement via l'API Business
+          - `300` Via le canal USSD
+          - `999` Ordre de transfert bancaire
+          - `500` Demande de Paiement sur site 
+          - `521` Demande de Paiement e-commerce 
+          - `401` Autres demandes de paiement de facture
+
+    # Montant Achat (Rechercher les PICO)
+    - name: montantAchat
+      in: query
+      schema:
+        type: number
+        title: Montant de l'achat
+
+    # Montant Retrait (Rechercher les PICASH et PICO)
+    - name: montantRetrait
+      in: query
+      schema:
+        type: number
+        title: Montant du retrait
+
+    # Motif
+    - name: motif
+      in: query
+      schema:
+        type: string
+        title: Motif du paiement
+
+    # Ref Doc Type
+    - name: refDocType
+      in: query
+      schema:
+        type: string
+        title: Type de document justificatif
+        description: Recherche les enregistrements en fonction du type de document justificatif.
+
+    # TxId
+    - name: txId
+      in: query
+      schema:
+        type: string
+        title: TxId
+        description: Identifiant de la transaction
+
+    # Demandes d'annulation
+    - name: annulationStatut
+      in: query
+      schema:
+        type: string
+        title: Statut de la demande d'annulation
+
+    # annulationMotif
+    - name: annulationMotif
+      in: query
+      schema:
+        type: string
+        title: Motif de la demande d'annulation
+        description: Permet de rechercher les demandes d'annulation
+
+    # retourStatut
+    - name: retourStatut
+      in: query
+      schema:
+        type: string
+        title: Statut du retour de fonds
+        description: Permet de rechercher les retours de fonds
+
+    # Pagination
+    - name: page
+      in: query
+      schema:
+        type: string
+        title: Page
+        description: Identifiant de la page
+    - name: size
+      in: query
+      schema:
+        type: string
+        title: Taille de la page
+        description: Nombre d'éléments à retourner
+    - name: sort
+      in: query
+      schema:
+        type: string
+        title: Triage
+        description: Trie les éléments selon le champ spécifié
+
+    # Liste de champs à retourner
+    - $ref: "../../parameters/Champs.yml"
+  responses:
+    "200":
+      description: Succès de l'opération
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/paiement/PaiementListe.yml"
+          examples:
+            paiements-recus:
+              $ref: "../../examples/paiement/PaiementListeRecus.yml"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"

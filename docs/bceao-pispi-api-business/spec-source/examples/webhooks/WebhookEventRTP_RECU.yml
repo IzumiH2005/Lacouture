@@ -1,0 +1,12 @@
+summary: Notification de demande de paiement reçue
+value:
+  data:
+    - evCode: RTP_RECU
+      evDate: "2023-02-21T15:30:01.250Z"
+      txId: "23552722"
+      client: Serigne Et Freres
+      montant: 15000
+      alias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+      end2endId: ESNB00120230221153554KXvozkpNvhUk9e
+  meta:
+    total: 1

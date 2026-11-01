@@ -1,0 +1,14 @@
+summary: "Paiement par IBAN envoyé"
+value:
+  txId: "23552723"
+  payeurAlias: "8b1b2499-3e50-435b-b757-ac7a83d8aa7f"
+  payeIban: "SN15SN0150101307430029018"
+  payeParticipant: "SNB015"
+  montant: 150000
+  statut: ENVOYE
+  confirmation: false
+  payeNom: "Entreprise Banque SN"
+  payePays: "SN"
+  dateDemande: "2023-02-21T15:30:01.250Z"
+  dateConfirmation: "2023-02-21T15:30:01.250Z"
+  end2endId: "ESNB01520230221153554KXvozkpNvhUk9e"

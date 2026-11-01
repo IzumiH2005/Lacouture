@@ -1,0 +1,14 @@
+summary: "Demande rejetée - txId dupliqué"
+description: "Le txId est dupliqué, La recherche d'alias n'a pas pu être effectuée donc payeurNom et payeurPays ne sont pas présents"
+value:
+  txId: "RTP-2025-001"
+  payeurAlias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+  payeAlias: "8b1b2499-3e50-435b-b757-ac7a83d8aa7f"
+  categorie: "401"
+  montant: 50000
+  motif: "Facture janvier 2025"
+  dateLimitePaiement: "2025-01-31T23:59:59.999Z"
+  statut: "REJETE"
+  statutRaison: "DU03"
+  end2endId: "ESNB00120250117100000RTPTXIDDUP001"
+  dateDemande: "2025-01-17T10:00:00.000Z"

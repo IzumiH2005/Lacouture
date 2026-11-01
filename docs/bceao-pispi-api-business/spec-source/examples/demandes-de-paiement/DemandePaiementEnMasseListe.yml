@@ -1,0 +1,15 @@
+summary: "Liste des demandes de paiement en masse"
+value:
+  data:
+    - instructionId: "RTP-MASSE-2025-01"
+      statut: "CONFIRME"
+      dateDemande: "2023-12-15T12:00:00.000Z"
+    - instructionId: "FACTURES-2025-01-1"
+      statut: "INITIE"
+      dateDemande: "2023-12-16T10:30:00.000Z"
+    - instructionId: "FACTURES-2025-01-2"
+      statut: "ANNULE"
+      dateDemande: "2023-12-17T14:20:00.000Z"
+  meta:
+    total: 3
+

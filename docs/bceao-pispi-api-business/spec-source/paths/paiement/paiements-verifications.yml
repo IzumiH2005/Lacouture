@@ -1,0 +1,62 @@
+parameters:
+  - name: end2endId
+    in: path
+    description: L'identifiant de bout en bout de la transaction
+    required: true
+    schema:
+      type: string
+# verifier le statut d'un paiement à partir de l'end2endId
+get:
+  tags:
+    - PaiementVerification
+  summary: Vérifier un paiement
+  security:
+    - OAuth2: [paiement.read]
+  description: |
+    Ce point de terminaison permet de rechercher un paiement reçu ou envoyé à partir du `end2endId`.
+
+    Dans certains cas, le **client business** peut ne pas avoir reçu la notification de paiement.
+    Le **client payeur** peut alors lui communiquer l’`end2endId` afin qu’il puisse vérifier manuellement le statut du paiement.
+
+    Le **participant** doit, dans ce cas, vérifier dans sa base de données et s'il ne trouve pas le paiement, il doit interroger l’endpoint de PI-SPI permettant de **récupérer le statut d’un paiement**,  puis **retourner ce statut** dans sa réponse.
+
+    Le statut retourné doit être soit :
+    - `IRREVOCABLE` (paiement irrévocable), ou
+    - `REJETE` (paiement rejeté).
+
+    Un transfert **ne peut pas** être signalé comme « en cours de traitement » dans ce contexte.
+
+    ⚠️ **Remarques :**
+    - La vérification ne doit concerner que les paiements réalisés depuis **moins de 3 mois (90 jours)** afin de garantir la disponibilité de la réponse.
+    - La garantie de réponse n’est assurée qu’à partir de **20 secondes après l’envoi du transfert**.
+
+  operationId: paiementVerifier
+  responses:
+    "200":
+      description: Opération effectuée avec succès
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/paiement/Paiement.yml"
+          examples:
+            paiement-irrevocable:
+              $ref: "../../examples/paiement/PaiementRecu.yml"
+            paiement-rejete:
+              $ref: "../../examples/paiement/PaiementRejete.yml"
+
+    "404":
+      description: Ce paiement n'a pas été trouvé
+      content:
+        application/problem+json:
+          schema:
+            $ref: "../../schemas/commons/Problem7807.yml"
+          examples:
+            exemple:
+              $ref: "../../examples/commons/Problem7807ExempleNotFoundJSON.yml"
+
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"

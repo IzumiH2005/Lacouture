@@ -1,0 +1,17 @@
+summary: "Demande de paiement envoyée - rejetée"
+value:
+  txId: "23552722"
+  end2endId: "ESNB00120230221103000KXvozkpNvhUk9e"
+  categorie: "521"
+  confirmation: false
+  payeAlias: "9b1b2499-3e50-435b-b757-ac7a83d8"
+  payeurAlias: "8b1b2499-3e50-435b-b757-ac7a83d8aa7f"
+  payeurNom: "Nom du client payé"
+  payeurPays: "BJ"
+  montant: 150000
+  dateLimiteReponse: "2023-02-21T15:30:01.250Z"
+  dateLimitePaiement: "2023-02-22T15:30:01.250Z"
+  dateDemande: "2023-02-21T15:30:01.150Z"
+  dateReponse: "2023-02-21T15:30:59.350Z"
+  statut: REJETE
+  statutRaison: BE05

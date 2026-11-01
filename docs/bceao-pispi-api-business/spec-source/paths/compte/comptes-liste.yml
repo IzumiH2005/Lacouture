@@ -1,0 +1,34 @@
+# Lister les comptes
+get:
+  tags:
+    - Comptes
+  summary: Lister les comptes
+  description: |
+    Cet endpoint permet au client business de consulter la liste de tous ses comptes auprès du participant.
+
+    Les informations retournées pour chaque compte incluent :
+    - Le numéro du compte
+    - Le type de compte 
+    - La date d'ouverture
+    - Le statut du compte (ouvert, bloqué ou clôturé)
+
+    Cette consultation permet au client business d'obtenir la liste de ses comptes.
+  security:
+    - OAuth2: [compte.read]
+  operationId: comptesLister
+  responses:
+    "200":
+      description: Succès de l'opération
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/compte/CompteListe.yml"
+          examples:
+            liste-comptes:
+              $ref: "../../examples/compte/CompteListe.yml"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"

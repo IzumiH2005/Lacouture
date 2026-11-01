@@ -1,0 +1,10 @@
+summary: Paiement PICASH (retrait espèces uniquement)
+value:
+  txId: "RTP-2023-006"
+  confirmation: false
+  categorie: "500"
+  payeurAlias: "9b1b3499-3e50-435b-b757-ac7a83d8aa96"
+  payeAlias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+  montant: 10100
+  montantRetrait: 10100
+  montantFrais: 100

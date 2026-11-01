@@ -1,0 +1,15 @@
+summary: "Demande de paiement envoyé sans confirmation"
+value:
+  txId: "23511722"
+  payeAlias: "8b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+  payeurAlias: "8b1b2499-3e50-435b-b757-ac7a83d8aa7f"
+  payeurNom: "Nom du client payé"
+  payeurPays: "BJ"
+  montant: 150000
+  categorie: 500
+  dateLimitePaiement: "2023-02-22T15:32:01.250Z"
+  end2endId: ESNB00120230221153001KXvozkpNvhUk9a
+  dateDemande: "2023-02-21T15:30:01.150Z"
+  dateEnvoi: "2023-02-21T15:30:01.250Z"
+  statut: ENVOYE
+  confirmation: false

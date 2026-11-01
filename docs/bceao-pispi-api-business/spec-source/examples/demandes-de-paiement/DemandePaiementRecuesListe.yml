@@ -1,0 +1,34 @@
+summary: Liste des demandes de paiement reçues
+value:
+  data:
+    - txId: "RTP-2023-001"
+      end2endId: "ESNC00220230221103000KXvozkpNvhUk9e"
+      categorie: "631"
+      payeurAlias: "9b1b3499-3e50-435b-b757-ac7a83d8aa96"
+      payeAlias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+      payeNom: "DIOP Mamadou"
+      payePays: "SN"
+      montant: 15000
+      statut: "IRREVOCABLE"
+      motif: "Demande de paiement d'allocation sociale"
+      dateDemande: "2023-02-21T10:30:00.000Z"
+      dateIrrevocabilite: "2023-02-21T10:35:05.000Z"
+
+    - txId: "RTP-2023-002"
+      end2endId: "ESNB00120230221103000KXvozkpNvhUk9e"
+      categorie: "401"
+      montant: 150000
+      payeurAlias: "8a2c3588-4f61-546c-c868-bd8b94e9bb9d"
+      payeAlias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+      payeNom: "Traoré & Freres"
+      payePays: "CI"
+      dateDemande: "2023-02-21T11:00:00.000Z"
+      dateLimitePaiement: "2023-03-31T23:59:59.999Z"
+      dateLimiteReponse: "2023-04-15T23:59:59.999Z"
+      refDocType: "CINV"
+      refDocNumero: "FACT-ELEC-202303"
+      statut: "INITIE"
+
+  meta:
+    size: 2
+    total: 2

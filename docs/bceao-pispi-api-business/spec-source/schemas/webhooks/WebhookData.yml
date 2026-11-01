@@ -1,0 +1,19 @@
+type: "object"
+title: "Webhook"
+allOf:
+  - type: object
+    properties:
+      id:
+        type: string
+        title: identifiant du webhook
+      dateCreation:
+        type: "string"
+        format: "date-time"
+        title: "Date de création"
+        description: Date et heure d'enregistrement du webhook. Conforme à la RFC ISO 8601
+      dateModification:
+        type: "string"
+        format: "date-time"
+        title: "Date de modification"
+        description: Date et heure de la dernière modification du webhook. Conforme à la RFC ISO 8601
+  - $ref: "./WebhookCreationRequest.yml"

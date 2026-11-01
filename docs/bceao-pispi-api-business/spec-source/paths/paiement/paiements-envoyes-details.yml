@@ -1,0 +1,36 @@
+parameters:
+  - name: txId
+    in: path
+    description: L'identifiant de la transaction donné par le client business
+    required: true
+    schema:
+      type: string
+# verifier le statut d'un paiement envoyé
+get:
+  tags:
+    - PaiementEnvoye
+  summary: Détails d'un paiement
+  security:
+    - OAuth2: [paiement.read]
+  description: |
+    Cet point de terminaison permet de consulter le statut d'un paiement envoyé.
+  operationId: paiementEnvoyeRecuperer
+  responses:
+    "200":
+      description: Opération effectuée avec succès
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/paiement/Paiement.yml"
+          examples:
+            paiement-envoye:
+              $ref: "../../examples/paiement/PaiementEnvoye.yml"
+
+    "404":
+      $ref: "../../responses/commons/RessourceInexistant.yml"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"

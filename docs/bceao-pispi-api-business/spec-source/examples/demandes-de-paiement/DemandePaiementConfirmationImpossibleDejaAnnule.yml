@@ -1,0 +1,7 @@
+summary: "Réponse - la demande de paiement est déjà rejetée"
+value:
+  type: "about:blank"
+  title: "Bad Request"
+  status: 403
+  detail: |
+    la demande de paiement est déjà rejetée.

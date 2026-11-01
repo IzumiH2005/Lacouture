@@ -1,0 +1,8 @@
+# 401
+# Problem7807ExempleUnauthorizedJSON:
+summary: "Problème autorisations insuffisantes"
+value:
+  type: "about:blank"
+  title: "Unauthorized"
+  status: 401
+  detail: "Autorisations insuffisantes"

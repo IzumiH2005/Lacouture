@@ -1,0 +1,9 @@
+# Avec confirmation
+# PaiementImmediatRequeteCasAvecConfirmation:
+summary: "Paiement immediat - confirmation demandée"
+value:
+  txId: "123-456-789"
+  payeurAlias: "8b1b2499-3e50-435b-b757-ac7a83d8aa7f"
+  payeAlias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+  montant: 150000000
+  confirmation: True

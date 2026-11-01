@@ -1,0 +1,9 @@
+# Paiement par numéro de compte (OTHER) - confirmation non requise
+summary: "Paiement par numéro de compte - confirmation non requise"
+value:
+  txId: "23552725"
+  payeurAlias: "8b1b2499-3e50-435b-b757-ac7a83d8aa7f"
+  payeOther: "12345678901234"
+  payeParticipant: "CIE042"
+  montant: 75000
+  confirmation: false

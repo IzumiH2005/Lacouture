@@ -1,0 +1,69 @@
+parameters:
+  - name: instructionId
+    in: path
+    description: L'identifiant du paiement en masse dans le SI du client
+    required: true
+    schema:
+      type: string
+
+# Vérifier le statut d'un paiement en masse
+get:
+  tags:
+    - PaiementEnMasse
+  summary: Détails d'un paiement en masse
+  security:
+    - OAuth2: [paiement_groupe.read]
+  description: |
+    Ce point de terminaison permet de consulter les détails d'un paiement en masse.
+
+    **Statut du bulk :**
+    - `INITIE` : Créé avec confirmation demandée, en attente de confirmation
+    - `CONFIRME` : Confirmé par le business (si confirmation demandée) ou en cours de traitement (si sans confirmation)
+    - `ANNULE` : Annulé par le business avant confirmation (seulement si confirmation demandée)
+
+    **Note :** 
+    - Si créé **avec confirmation** (`confirmation: true`) : Le statut évolue de `INITIE` → `CONFIRME` ou `ANNULE`
+    - Si créé **sans confirmation** (`confirmation: false`) : Le statut est directement `CONFIRME` (aucune action requise du business)
+
+    **Vérification de fin de validation (important pour confirmation) :**
+
+    Lorsque `confirmation: true`, la validation des transactions se fait de manière asynchrone. 
+    Pour savoir si la validation est terminée et si vous pouvez confirmer, vérifiez que :
+
+    ```
+    transactionsInitiees + transactionsRejetees = transactionsTotal
+    ```
+
+    - Si égalité → Validation terminée, vous pouvez confirmer ✅
+    - Si inégalité → Validation en cours, attendez encore (consultez à nouveau dans quelques secondes) ⏳
+
+    La progression détaillée de chaque transaction se consulte via `GET /paiements?txId={txId}`.
+
+    **Consultation des transactions individuelles :**  
+    Pour obtenir la liste détaillée des transactions (avec noms des bénéficiaires, codes d'erreur, etc.), utilisez :
+    - Toutes les transactions : `GET /paiements?instructionId={instructionId}`
+    - Seulement les rejetées : `GET /paiements?instructionId={instructionId}&statut=REJETE`
+    - Seulement les réussies : `GET /paiements?instructionId={instructionId}&statut=IRREVOCABLE`
+  operationId: paiementGroupeConsulter
+  responses:
+    "200":
+      description: Opération effectuée avec succès
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/paiement/PaiementEnMasseReponseStatut.yml"
+          examples:
+            statut-initie:
+              $ref: "../../examples/paiement/PaiementEnMasseReponseStatutInitie.yml"
+            statut-confirme:
+              $ref: "../../examples/paiement/PaiementEnMasseReponseStatut.yml"
+            statut-annule:
+              $ref: "../../examples/paiement/PaiementEnMasseReponseStatutAnnule.yml"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "404":
+      $ref: "../../responses/commons/RessourceInexistant.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"

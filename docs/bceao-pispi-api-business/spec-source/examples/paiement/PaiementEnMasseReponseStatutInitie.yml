@@ -1,0 +1,11 @@
+summary: "Paiement en masse en attente de confirmation"
+value:
+  instructionId: "SALAIRES-2025-01"
+  statut: "INITIE"
+  dateDemande: "2024-10-17T10:00:00.000Z"
+  dateExpiration: "2024-10-18T10:00:00.000Z"
+  transactionsTotal: 500
+  transactionsInitiees: 498
+  transactionsEnvoyees: 0
+  transactionsIrrevocables: 0
+  transactionsRejetees: 2

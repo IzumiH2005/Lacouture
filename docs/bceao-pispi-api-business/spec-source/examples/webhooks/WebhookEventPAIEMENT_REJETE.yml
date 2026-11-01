@@ -1,0 +1,13 @@
+summary: Notification de paiement rejeté
+value:
+  data:
+    - evCode: PAIEMENT_REJETE
+      evDate: "2023-02-21T15:30:01.250Z"
+      txId: "23552722"
+      montant: 15000
+      client: Fournisseur ABC
+      alias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+      end2endId: ESNB00120230221153554KXvozkpNvhUk9e
+      motif: AM04
+  meta:
+    total: 1

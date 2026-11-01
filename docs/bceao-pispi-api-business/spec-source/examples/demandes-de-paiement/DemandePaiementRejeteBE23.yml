@@ -1,0 +1,14 @@
+summary: "Demande rejetée - Alias payeur invalide"
+description: "La recherche d'alias a échoué"
+value:
+  txId: "RTP-2025-002"
+  payeurAlias: "ALIAS-INVALIDE-456"
+  payeAlias: "8b1b2499-3e50-435b-b757-ac7a83d8aa7f"
+  categorie: "401"
+  montant: 75000
+  motif: "Facture février 2025"
+  dateLimitePaiement: "2025-02-28T23:59:59.999Z"
+  statut: "REJETE"
+  statutRaison: "BE23"
+  end2endId: "ESNB00120250117100500RTPALIASINV002"
+  dateDemande: "2025-01-17T10:05:00.000Z"

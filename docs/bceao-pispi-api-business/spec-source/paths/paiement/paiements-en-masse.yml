@@ -1,0 +1,153 @@
+# enregistrer un paiement en masse
+# /paiements-en-masse:
+post:
+  tags:
+    - PaiementEnMasse
+  summary: Envoyer un paiement en masse
+  security:
+    - OAuth2: [paiement_groupe.write]
+  description: |
+    Ce point de terminaison permet au client d'envoyer des paiements en masse.
+
+    **Traitement asynchrone :** La création d'un paiement en masse retourne immédiatement `202 Accepted`. Le traitement des transactions se fait de manière asynchrone.
+
+    **Sans confirmation (`confirmation: false` ou non spécifié) :**
+    - Les transactions sont créées et validées (unicité des txId)
+    - Les paiements sont exécutés directement
+    - Les transactions invalides (txId dupliqué) sont automatiquement rejetées avec le code `DU03`
+    - Le business peut suivre la progression via `GET /paiements-groupes/{instructionId}` et `GET /paiements?instructionId={instructionId}`
+
+    **Avec confirmation (`confirmation: true`) :**
+    - Les transactions sont créées et validées (unicité des txId + recherche d'alias)
+    - Les transactions avec alias invalide sont automatiquement rejetées avec le code `BE23`
+    - Les transactions avec txId dupliqué sont rejetées avec le code `DU03`
+    - Les transactions valides passent à l'état `INITIE` et peuvent être consultées via `GET /paiements?instructionId={instructionId}&statut=INITIE`
+    - Le business dispose d'un **délai adaptatif** pour confirmer ou annuler via `PUT /paiements-groupes/{instructionId}/confirmations` :
+      - **1 à 500 transactions** : 24 heures
+      - **501 à 1000 transactions** : 48 heures
+      - **Plus de 1000 transactions** : 72 heures
+    - Lors de la confirmation, seules les transactions `INITIE` sont envoyées (les transactions `REJETE` sont automatiquement exclues)
+    - Passé le délai, la demande expire automatiquement
+
+    **Consultation des détails :**
+    - Statut global du bulk : `GET /paiements-groupes/{instructionId}`
+    - Liste de toutes les transactions : `GET /paiements?instructionId={instructionId}`
+    - Seulement les rejetées (validation) : `GET /paiements?instructionId={instructionId}&statut=REJETE`
+    - Seulement les valides (avec noms/pays) : `GET /paiements?instructionId={instructionId}&statut=INITIE`
+
+    **Convention de nommage des instructionId (important) :**
+
+    L'`instructionId` doit être **unique** pour chaque création de bulk. Pour faciliter le suivi métier, nous recommandons la convention suivante :
+
+    ```
+    <IDENTIFIANT_METIER>-<NUMERO_TENTATIVE>
+    ```
+
+    **Exemples :**
+    - Première tentative : `SALAIRES-2025-01-1` (salaires de janvier 2025, tentative 1)
+    - Deuxième tentative : `SALAIRES-2025-01-2` (corrections après échecs)
+    - Troisième tentative : `SALAIRES-2025-01-3` (nouvelles corrections)
+
+    **Avantages :**
+    - ✅ Chaque bulk a un statut indépendant (INITIE, CONFIRME, ANNULE)
+    - ✅ Traçabilité claire des tentatives successives
+    - ✅ Possibilité de filtrer par identifiant métier : `GET /paiements?instructionId[beginsWith]=SALAIRES-2025-01`
+    - ✅ Respect de l'unicité de l'instructionId
+
+  operationId: paiementGroupeCreer
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: "../../schemas/paiement/PaiementEnMasseRequest.yml"
+        examples:
+          avec-confirmation:
+            summary: "Paiement de salaires avec confirmation"
+            description: "Vérification des alias des bénéficiaires avant envoi des paiements"
+            $ref: "../../examples/paiement/PaiementEnMasseRequeteSalaires.yml"
+          sans-confirmation:
+            summary: "Paiement de fournisseurs sans confirmation"
+            description: "Envoi direct des paiements sans vérification préalable"
+            $ref: "../../examples/paiement/PaiementEnMasseRequeteFournisseurs.yml"
+    required: true
+  responses:
+    "202":
+      description: |
+        La demande a été acceptée et est en cours de traitement.
+
+        Consultez le statut via `GET /paiements-groupes/{instructionId}`.
+      headers:
+        Location:
+          description: URL pour consulter le statut du paiement en masse
+          schema:
+            type: string
+            example: "/paiements-groupes/SALAIRES-2025-01-1"
+    "409":
+      description: Conflit - instructionId déjà utilisé
+      content:
+        application/problem+json:
+          schema:
+            $ref: "../../schemas/commons/Problem7807.yml"
+          examples:
+            instructionId-duplique:
+              summary: "instructionId déjà existant"
+              value:
+                type: "about:blank"
+                title: "Conflict"
+                status: 409
+                detail: "Un paiement en masse avec cet instructionId existe déjà"
+                invalid-params:
+                  - name: instructionId
+                    reason: "L'instructionId 'SALAIRES-2025-01-1' est déjà utilisé par un autre paiement en masse"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "400":
+      $ref: "../../responses/commons/FormatInvalide.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"
+
+# Lister les paiements en masse
+get:
+  tags:
+    - PaiementEnMasse
+  summary: Lister les paiements en masse
+  security:
+    - OAuth2: [paiement_groupe.read]
+  description: |
+    Ce point de terminaison permet de consulter la liste de tous les paiements en masse.
+
+    Pour chaque paiement en masse, les informations retournées incluent :
+    - L'instructionId du paiement
+    - Le statut (INITIE, CONFIRME, ANNULE)
+    - La date de création du paiement
+
+    Pour obtenir les détails complets d'un paiement spécifique, utilisez `GET /paiements-groupes/{instructionId}`.
+  operationId: paiementsGroupeLister
+  parameters:
+    # Filtres
+    - name: statut
+      in: query
+      schema:
+        type: string
+        enum: [INITIE, CONFIRME, ANNULE]
+        title: Statut du paiement
+        description: Filtre les paiements selon le statut
+
+  responses:
+    "200":
+      description: Succès de l'opération
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/paiement/PaiementEnMasseListe.yml"
+          examples:
+            liste-paiements:
+              $ref: "../../examples/paiement/PaiementEnMasseListe.yml"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"

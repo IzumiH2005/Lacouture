@@ -1,0 +1,9 @@
+summary: "Création alias refusé - limite depassé"
+value:
+  type: "about:blank"
+  title: "Bad Request"
+  status: 403
+  detail: "Depassement de limite de création d'alias"
+  invalid-params:
+    - name: cle
+      reason: Vous avez atteint la limite de création d'alias autorisé

@@ -1,0 +1,20 @@
+# Modèle Item pour la liste des paiements en masse
+type: object
+properties:
+  instructionId:
+    type: string
+    description: Identifiant du paiement en masse
+  statut:
+    type: string
+    enum: [INITIE, CONFIRME, ANNULE]
+    description: |
+      Statut global du paiement en masse:
+      - `INITIE`: Créé avec confirmation demandée, en attente de confirmation
+      - `CONFIRME`: Confirmé par le business ou en cours de traitement
+      - `ANNULE`: Annulé par le business
+  dateDemande:
+    type: string
+    format: date-time
+    description: Date de création du paiement en masse
+additionalProperties: false
+

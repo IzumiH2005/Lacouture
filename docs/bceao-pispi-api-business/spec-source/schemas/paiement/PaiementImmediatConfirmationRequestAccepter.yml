@@ -1,0 +1,12 @@
+# Modèle confirmation de paiement immediat - oui envoie
+# PaiementImmediatConfirmationRequestConfirmer:
+type: object
+properties:
+  decision:
+    type: boolean
+    enum: [true]
+    description: La décision à `true` indique la confirmation du paiement.
+additionalProperties: false
+description: Confirmation du paiement immédiat
+required:
+  - decision

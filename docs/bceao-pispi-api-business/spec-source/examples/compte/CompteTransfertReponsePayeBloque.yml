@@ -1,0 +1,10 @@
+summary: "Transfert refusé - Compte bloqué du payé"
+value:
+  type: "about:blank"
+  title: "Forbidden"
+  status: 403
+  detail: Le compte du payé est bloqué
+  instance: "/comptes/transactions/23511722"
+  invalid-params:
+    - name: payeNumero
+      reason: Le compte du payé est bloqué.

@@ -1,0 +1,15 @@
+# 409
+# RessourceDejaExistant:
+description: La ressource existe déjà
+content:
+  application/problem+json:
+    schema:
+      $ref: "../../schemas/commons/Problem7807.yml"
+    examples:
+      exemple:
+        summary: "Ressource déjà existante"
+        value:
+          type: "about:blank"
+          title: "Conflict"
+          status: 409
+          detail: "La ressource existe déjà."

@@ -1,0 +1,144 @@
+oneOf:
+  - title: Paiement initiée (txId valide et bénéficiaire trouvé - confirmation demandée)
+    description: |
+      Paiement avec confirmation demandée.
+      Le bénéficiaire a été trouvé via alias, IBAN ou numéro de compte.
+    allOf:
+      - $ref: "./PaiementRequest.yml"
+      - type: object
+        properties:
+          statut:
+            type: string
+            enum: ["INITIE"]
+            default: "INITIE"
+          confirmation:
+            type: boolean
+            enum: [true]
+          payeNom:
+            type: string
+            description: Le nom du payé
+          payePays:
+            type: string
+            description: Le pays de residence du payé
+          end2endId:
+            type: string
+            description: Identifiant unique de bout en bout de la transaction
+          dateDemande:
+            type: string
+            format: date-time
+            description: |
+              Date de création du paiement: date et heure à laquelle le paiement a été initié par le client business.
+          montantFrais:
+            type: number
+            description: Les frais appliqués par le participant (Optionnel - dépend du modèle de facturation utilisé par le participant)
+        required:
+          - statut
+          - confirmation
+          - payeNom
+          - payePays
+          - end2endId
+          - dateDemande
+
+  - title: Paiement envoyée (txId valide et bénéficiaire trouvé - confirmation non demandée)
+    description: |
+      Paiement envoyé sans confirmation.
+      Le bénéficiaire a été trouvé via alias, IBAN ou numéro de compte.
+    allOf:
+      - $ref: "./PaiementRequest.yml"
+      - type: object
+        properties:
+          statut:
+            type: string
+            enum: ["ENVOYE"]
+            default: "ENVOYE"
+          confirmation:
+            type: boolean
+            enum: [false]
+          payeNom:
+            type: string
+            description: Le nom du bénéficiaire
+          payePays:
+            type: string
+            description: Le pays de résidence du bénéficiaire
+          end2endId:
+            type: string
+            description: Identifiant unique de bout en bout de la transaction
+          dateDemande:
+            type: string
+            format: date-time
+            description: |
+              Date de création du paiement: date et heure à laquelle le paiement a été initié par le client business.
+          dateConfirmation:
+            type: string
+            format: date-time
+            description: |
+              Date d'acceptation de la demande:  date et heure à laquelle l'ordre de transfert du client business est reçu par le participant.
+
+              Dans le cas d'un paiement sans confirmation, elle correspond également à `dateDemande`.
+          dateEnvoi:
+            type: string
+            format: date-time
+            description: Date d'envoi du paiement
+          montantFrais:
+            type: number
+            description: Les frais appliqués par le participant (Optionnel - dépend du modèle de facturation utilisé par le participant)
+        required:
+          - statut
+          - confirmation
+          - payeNom
+          - payePays
+          - end2endId
+          - dateDemande
+          - dateConfirmation
+
+  - title: Paiement rejeté
+    description: |
+      Paiement rejeté lors de la vérification initiale.
+      Codes fréquents :
+      - `DU03` : txId dupliqué
+      - `BE23` : bénéficiaire invalide (alias, IBAN ou numéro de compte)
+      - `AC01` : compte inexistant chez le participant destinataire (parcours IBAN / numéro de compte uniquement)
+      - `AB05` : timeout — le participant n'a pas répondu à la vérification d'identité (parcours IBAN / numéro de compte uniquement)
+    allOf:
+      - $ref: "./PaiementRequest.yml"
+      - type: object
+        properties:
+          statut:
+            type: string
+            enum: ["REJETE"]
+            default: "REJETE"
+          statutRaison:
+            $ref: "./PaiementStatutRaison.yml"
+          payeNom:
+            type: string
+            description: |
+              Le nom du bénéficiaire (présent seulement si la vérification du bénéficiaire a réussi).
+
+              Absent si statutRaison = `BE23`, `AC01` ou `AB05`
+              (bénéficiaire / compte invalide, compte inexistant, ou timeout de vérification d'identité).
+              Présent si statutRaison = `DU03` (txId dupliqué) ou autres codes après vérification réussie.
+          payePays:
+            type: string
+            description: |
+              Le pays de résidence du bénéficiaire (présent seulement si la vérification du bénéficiaire a réussi).
+
+              Absent si statutRaison = `BE23`, `AC01` ou `AB05`
+              (bénéficiaire / compte invalide, compte inexistant, ou timeout de vérification d'identité).
+              Présent si statutRaison = `DU03` (txId dupliqué) ou autres codes après vérification réussie.
+          end2endId:
+            type: string
+            description: Identifiant unique de bout en bout de la transaction
+          dateDemande:
+            type: string
+            format: date-time
+            description: Date de création du paiement
+          dateReponse:
+            type: string
+            format: date-time
+            description: Date à laquelle le paiement a été rejeté
+        required:
+          - statut
+          - statutRaison
+          - confirmation
+          - end2endId
+          - dateDemande

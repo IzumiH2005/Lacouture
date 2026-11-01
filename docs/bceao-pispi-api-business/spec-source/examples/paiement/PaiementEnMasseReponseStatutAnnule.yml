@@ -1,0 +1,11 @@
+summary: "Paiement en masse annulé par le business"
+value:
+  instructionId: "SALAIRES-2025-01"
+  statut: "ANNULE"
+  dateDemande: "2024-10-17T10:00:00.000Z"
+  dateAnnulation: "2024-10-17T10:05:00.000Z"
+  transactionsTotal: 500
+  transactionsInitiees: 498
+  transactionsEnvoyees: 0
+  transactionsIrrevocables: 0
+  transactionsRejetees: 2

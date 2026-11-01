@@ -1,0 +1,246 @@
+# Envoyer une demande de paiement
+post:
+  tags:
+    - DemandesDePaiement
+  summary: Envoyer une demande
+  security:
+    - OAuth2: [demande_paiement.write]
+  description: |
+    Ce point de terminaison permet d'envoyer une demande de paiement.
+
+    Le business peut définir le champ `confirmation` à `true` pour demander une validation en deux étapes : le PSP retournera d'abord le résultat de la recherche d'alias (avec le nom et le pays du payeur), puis attendra une confirmation explicite avant d'envoyer la demande de paiement au payeur via l'endpoint `PUT /demandes-paiements/{txId}/confirmations`.
+
+    Si le champ `confirmation` n'est pas défini ou est à `false`, le système envoie directement la demande de paiement au payeur.
+
+    **Timeout de confirmation** : Si le business demande une validation en deux étapes , il dispose de **24 heures** pour confirmer ou annuler. Passé ce délai, la demande expire automatiquement.
+
+  operationId: demandePaiementCreer
+  requestBody:
+    description: Données pour envoyer une demande de paiement.
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../schemas/demandes-de-paiement/DemandePaiementRequest.yml"
+        examples:
+          # Confirmation demandée
+          paiement-avec-confirmation:
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementRequestCasAvecConfirmation.yml"
+          # Confirmation non demandée
+          paiement-sans-confirmation:
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementRequestCasSansConfirmation.yml"
+
+          # Paiement immédiat sur site
+          paiement-immediat-sur-site:
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementImmediatSurSite.yml"
+          paiement-pico:
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementPICO.yml"
+          paiement-picash:
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementPICASH.yml"
+          paiement-sur-site-debit-differe:
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementSurSiteDebitDiffere.yml"
+
+          # Paiement immédiat e-commerce
+          paiement-immediat-en-ligne:
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementImmediatEnLigne.yml"
+          paiement-en-ligne-debit-differe:
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementEnLigneDebitDiffere.yml"
+
+          # Autres demandes de paiement de facture
+          paiement-facture:
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementFacture.yml"
+          paiement-facture-avec-remise:
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementFactureAvecRemise.yml"
+
+  responses:
+    "200":
+      description: |
+        Demande de paiement traitée. Le champ `statut` indique le résultat :
+        - `INITIE` : En attente de confirmation (si `confirmation: true`)
+        - `ENVOYE` : Demande envoyée au payeur avec succès (si `confirmation: false`)
+        - `REJETE` : Demande rejetée. Le champ `statutRaison` contient le code d'erreur :
+          - `DU03` : txId dupliqué (déjà utilisé)
+          - `BE23` : Alias payeur invalide
+          - Autres codes ISO 20022
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/demandes-de-paiement/DemandePaiementReponse.yml"
+          examples:
+            sans-confirmation:
+              $ref: "../../examples/demandes-de-paiement/DemandePaiementReponseCasSansConfirmation.yml"
+            avec-confirmation:
+              $ref: "../../examples/demandes-de-paiement/DemandePaiementReponseCasAvecConfirmation.yml"
+            rejete-txid-duplique:
+              $ref: "../../examples/demandes-de-paiement/DemandePaiementRejeteDU03.yml"
+            rejete-alias-invalide:
+              $ref: "../../examples/demandes-de-paiement/DemandePaiementRejeteBE23.yml"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "400":
+      $ref: "../../responses/commons/FormatInvalide.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"
+
+# Lister les demandes de paiement
+get:
+  parameters:
+    # Destinataire
+    - name: payeAlias
+      in: query
+      schema:
+        type: string
+        title: alias du client payé
+
+    - name: payeCompte
+      in: query
+      schema:
+        type: string
+        title: numéro de compte du client payé
+
+
+    # Statut
+    - name: statut
+      in: query
+      schema:
+        type: string
+        enum: ["INITIE", "ANNULE", "ENVOYE", "IRREVOCABLE", "REJETE"]
+        title: Statut de la demande de paiement
+
+    # Categorie
+    - name: categorie
+      in: query
+      schema:
+        type: string
+        title: Categorie de la demande
+        enum: ["631", "500", "521", "401"]
+    # Date demande de paiement
+    - in: query
+      name: dateDemande
+      required: false
+      schema:
+        type: string
+        format: date-time
+        title: Date de la demande de paiement
+
+
+    # Date Limite paiement
+    - in: query
+      name: dateLimitePaiement
+      required: false
+      schema:
+        type: string
+        format: date-time
+        title: Date limite de paiement
+
+    # Payeur Alias
+    - name: payeurAlias
+      in: query
+      schema:
+        type: string
+        title: alias du client payeur
+
+    # Montant Achat (Rechercher les PICO)
+    - name: montantAchat
+      in: query
+      schema:
+        type: number
+        title: Montant de l'achat
+
+    # Montant Retrait (Rechercher les PICASH et PICO)
+    - name: montantRetrait
+      in: query
+      schema:
+        type: number
+        title: Montant du retrait
+
+    # Debit Differe
+    - name: debitDiffere
+      in: query
+      schema:
+        type: boolean
+        title: Debit Differe
+        description: >-
+          Recherche les enregistrements en fonction du debit differe.
+
+    # Remise
+    - name: remise
+      in: query
+      schema:
+        type: boolean
+        title: Remise
+        description: >-
+          Recherche les transactions avec ou sans remise.
+
+    # Motif
+    - name: motif
+      in: query
+      schema:
+        type: string
+        title: Motif de la demande de paiement
+        description: >-
+          Recherche les enregistrements en fonction du motif de la demande de paiement.
+
+    # Ref Doc Type
+    - in: query
+      name: refDocType
+      required: false
+      schema:
+        $ref: "../../schemas/commons/RefDocType.yml"
+
+    # Instruction Id
+    - name: instructionId
+      in: query
+      schema:
+        type: string
+        title: Instruction Id
+        description: Recherche les transactions d'une demande de paiement en masse
+
+    # Pagination
+    - name: page
+      in: query
+      schema:
+        type: string
+        title: Page
+        description: Identifiant de la page
+    - name: size
+      in: query
+      schema:
+        type: number
+        title: Taille de la page
+        description: Nombre d'éléments à retourner
+    - name: sort
+      in: query
+      schema:
+        type: string
+        title: Triage
+        description: Trie les éléments selon le champ spécifié
+
+    # Liste de champs à retourner
+    - $ref: "../../parameters/Champs.yml"
+
+  tags:
+    - DemandesDePaiement
+  summary: Lister les demandes
+  security:
+    - OAuth2: [demande_paiement.read]
+  description: Ce point de terminaison permet de lister les demandes de paiements effectuées par le client.
+  operationId: demandePaiementLister
+  responses:
+    "200":
+      description: Succès de l'opération
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/demandes-de-paiement/DemandePaiementListe.yml"
+          examples:
+            liste-demandes:
+              $ref: "../../examples/demandes-de-paiement/DemandePaiementEnvoyeesListe.yml"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"

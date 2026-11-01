@@ -1,0 +1,15 @@
+summary: "Paiement rejeté - txId dupliqué"
+description: "La recherche d'alias a réussi mais le txId est dupliqué, donc payeNom et payePays sont présents"
+value:
+  txId: "PAY-2025-001"
+  payeAlias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+  payeurAlias: "8b1b2499-3e50-435b-b757-ac7a83d8aa7f"
+  montant: 50000
+  motif: "Paiement facture"
+  statut: "REJETE"
+  statutRaison: "DU03"
+  payeNom: "Jean Dupont"
+  payePays: "SN"
+  end2endId: "ESNB00120250117100000TXIDDUP001"
+  dateDemande: "2025-01-17T10:00:00.000Z"
+  dateReponse: "2025-01-17T10:00:01.000Z"

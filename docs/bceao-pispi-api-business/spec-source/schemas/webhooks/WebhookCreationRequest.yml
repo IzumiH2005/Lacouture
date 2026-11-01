@@ -1,0 +1,21 @@
+type: object
+title: Webhook
+properties:
+  callbackUrl:
+    type: string
+    title: URL de callback
+    format: uri
+    example: https://mybusiness.example.com/api/webhook/
+  alias:
+    type: string
+    title: Alias du client
+    description: |
+      l'alias auquel est rattaché le point de rappel pour recevoir des notifications liées à un alias de compte
+  events:
+    type: array
+    description: |
+      les évènements dont les notifications seront envoyés sur le point de terminaison
+    items:
+      $ref: "./WebhooksEvents.yml"
+required:
+  - callbackUrl

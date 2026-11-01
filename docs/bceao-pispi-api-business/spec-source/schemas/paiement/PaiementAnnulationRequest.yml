@@ -1,0 +1,6 @@
+type: object
+properties:
+  raison:
+    $ref: "./PaiementAnnulationMotif.yml"
+required:
+  - raison

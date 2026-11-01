@@ -1,0 +1,26 @@
+summary: Notification de plusieurs événements simultanés
+value:
+  data:
+    - evCode: PAIEMENT_RECU
+      evDate: "2023-02-21T15:35:54.550Z"
+      txId: "23552722"
+      montant: 400
+      client: Christian POUYE
+      alias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+      end2endId: ESNB00120230221153554KXvozkpNvhUk9e
+    - evCode: PAIEMENT_RECU
+      evDate: "2023-02-21T15:36:12.320Z"
+      txId: "23552723"
+      montant: 1500
+      client: Mariam Traore
+      alias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+      end2endId: ESNB00120230221153612AbCdEfGhIjKl
+    - evCode: RTP_RECU
+      evDate: "2023-02-21T15:37:05.890Z"
+      txId: "23552724"
+      montant: 25000
+      client: Fournisseur Abc
+      alias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+      end2endId: ESNB00120230221153705MnOpQrStUvWx
+  meta:
+    total: 3

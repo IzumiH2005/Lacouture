@@ -1,0 +1,34 @@
+# Exemple de réponse acceptée à une demande d'annulation
+summary: "Demande d'annulation acceptée - Retour de fonds initié"
+description: |
+  Le business a accepté la demande d'annulation.
+
+  L'objet Paiement retourné contient :
+  - Les champs `annulationStatut` et `annulationDateReponse` mis à jour
+  - Les champs `retour*` renseignés car un retour de fonds a été automatiquement initié
+value:
+  txId: "Tag-a7d96dfdsdf965dfdsdf"
+  payeurAlias: "9b1b3499-3e50-435b-b757-ac7a83d8aa96"
+  payeurNom: "Jean Dupont"
+  payeurPays: "SN"
+  payeurCompte: "1234567890"
+  payeAlias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+  payeNom: "Fournisseur Az 582f"
+  payePays: "SN"
+  payeCompte: "0987654321"
+  categorie: "733"
+  montant: 2000000
+  confirmation: false
+  dateConfirmation: "2024-01-10T10:30:00.050Z"
+  statut: "IRREVOCABLE"
+  end2endId: "ESNB00120240110103000KXvozkpNvhUk9e"
+  dateIrrevocabilite: "2024-01-10T10:30:01.000Z"
+  motif: "Paiement pour service"
+  # Données de la demande d'annulation
+  annulationStatut: "ACCEPTE"
+  annulationMotif: "SVNR"
+  annulationDateDemande: "2024-01-12T15:30:01.000Z"
+  annulationDateReponse: "2024-01-15T10:30:00.000Z"
+  # Données du retour de fonds (renseignées car annulation acceptée)
+  retourStatut: "ENVOYE"
+  retourDateDemande: "2024-01-15T10:30:00.000Z"

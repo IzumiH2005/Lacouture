@@ -1,0 +1,11 @@
+summary: "Paiement en masse confirmé"
+value:
+  instructionId: "123-5678292"
+  statut: "CONFIRME"
+  dateDemande: "2024-10-17T10:00:00.000Z"
+  dateConfirmation: "2024-10-17T10:05:00.000Z"
+  transactionsTotal: 7
+  transactionsInitiees: 0
+  transactionsEnvoyees: 7
+  transactionsIrrevocables: 0
+  transactionsRejetees: 0

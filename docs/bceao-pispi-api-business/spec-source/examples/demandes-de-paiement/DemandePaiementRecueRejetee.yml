@@ -1,0 +1,19 @@
+summary: "Demande de paiement reçue rejetée"
+value:
+  txId: "RTP-2023-005"
+  end2endId: "ESNC00520230221153000KXvozkpNvhUk9h"
+  confirmation: true
+  categorie: "521"
+  payeurAlias: "9b1b3499-3e50-435b-b757-ac7a83d8aa96"
+  payeAlias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+  payeNom: "Nom du client payé"
+  payePays: "BJ"
+  montant: 150000
+  statut: "REJETE"
+  statutRaison: "BE05"
+  motif: "Paiement de facture"
+  dateDemande: "2023-02-21T15:30:00.000Z"
+  dateEnvoi: "2023-02-21T15:30:01.250Z"
+  dateReponse: "2023-02-21T15:30:59.350Z"
+  dateLimiteReponse: "2023-02-21T15:30:01.250Z"
+  dateLimitePaiement: "2023-02-22T15:30:01.250Z"

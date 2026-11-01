@@ -1,0 +1,16 @@
+summary: "Liste des participants PI"
+value:
+  data:
+    - codeMembre: "SNB015"
+      nomMembre: "Banque Exemple Sénégal"
+      codeBanque: "SN015"
+      statut: "ENBL"
+    - codeMembre: "CIC042"
+      nomMembre: "Émetteur Monnaie Électronique CI"
+      statut: "ENBL"
+    - codeMembre: "TGB025"
+      nomMembre: "Banque Exemple Togo"
+      codeBanque: "TG025"
+      statut: "DSBL"
+  meta:
+    total: 3

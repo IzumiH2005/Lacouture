@@ -1,0 +1,7 @@
+type: string
+enum: ["INITIE", "ENVOYE", "REJETE", "ACCEPTE"]
+description: |
+  - `INITIE` si la demande d'annulation est initiée
+  - `ENVOYE` si la demande d'annulation est envoyée
+  - `REJETE` lorsque la demande d'annulation est rejetée
+  - `ACCEPTE` lorsque la demande d'annulation est acceptée

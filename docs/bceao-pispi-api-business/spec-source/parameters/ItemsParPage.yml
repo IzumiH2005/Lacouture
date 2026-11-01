@@ -1,0 +1,12 @@
+# ItemsParPage:
+in: query
+name: pagination.limit
+required: false
+schema:
+  type: integer
+  format: int32
+  title: Nombre d'élements maximum à retourner
+  minimum: 1
+  maximum: 1000
+  default: 100
+  description: Nombre maximum d'enregistrements renvoyés sur chaque page.

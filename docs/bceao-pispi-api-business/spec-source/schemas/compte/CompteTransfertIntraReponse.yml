@@ -1,0 +1,34 @@
+allOf:
+  - $ref: "./CompteTransfertIntraRequest.yml"
+  - type: object
+    properties:
+      statut:
+        type: string
+        enum:
+          - INITIE
+          - IRREVOCABLE
+          - REJETE
+        description: |
+          - `INITIE` Le transfert est en cours de traitement
+          - `IRREVOCABLE` Le tranfert à été effectué avec succès
+          - `REJETE` Le tranfert à été rejeté
+      statutRaison:
+        type: string
+        enum:
+          - AG07
+          - AC06
+          - FF10
+        description: |
+          - AG07 le solde du compte debiteur est insuffisant pour effectuer l'opération.
+          - AC06 le compte debiteur ou le compte crediteur est bloqué
+          - FF10 Erreur de traitement du système interne du participant
+      dateEnvoi:
+        type: string
+        format: date-time
+        description: |
+          Date d'envoi du transfert de fonds: date et heure à laquelle le transfert à été initié
+      dateIrrevocabilite:
+        type: string
+        format: date-time
+        description: |
+          Date d'irrévocabilité du transfert de fonds: date et heure à laquelle le transfert à été irrévocable

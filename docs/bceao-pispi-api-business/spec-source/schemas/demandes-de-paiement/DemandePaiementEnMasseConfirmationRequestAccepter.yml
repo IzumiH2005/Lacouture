@@ -1,0 +1,11 @@
+# Modèle confirmation de demande de paiement en masse - oui envoyer
+type: object
+properties:
+  decision:
+    type: boolean
+    enum: [true]
+    description: La décision à `true` indique la confirmation de la demande de paiement en masse.
+additionalProperties: false
+description: Confirmation de la demande de paiement en masse
+required:
+  - decision

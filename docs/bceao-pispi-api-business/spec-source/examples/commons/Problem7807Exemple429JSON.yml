@@ -1,0 +1,8 @@
+# 429
+# Problem7807Exemple429JSON:
+summary: "Problème format invalide"
+value:
+  type: "about:blank"
+  title: "Too Many Requests"
+  status: 429
+  detail: "Dépassement du quota d’appels API: envoie de trop de requêtes en un temps donné."

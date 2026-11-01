@@ -1,0 +1,13 @@
+summary: Notification de retour de fonds rejeté
+value:
+  data:
+    - evCode: RETOUR_REJETE
+      evDate: "2023-02-21T15:30:01.250Z"
+      txId: "23552722"
+      montant: 12000
+      alias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+      client: Chris Seini
+      end2endId: ESNB00120230221153554KXvozkpNvhUk9e
+      motif: AM04
+  meta:
+    total: 1

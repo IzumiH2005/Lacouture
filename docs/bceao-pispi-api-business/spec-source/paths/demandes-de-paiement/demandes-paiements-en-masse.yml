@@ -1,0 +1,160 @@
+# enregistrer un paiement en masse
+# /paiements-en-masse:
+post:
+  tags:
+    - DemandesDePaiementEnMasse
+  summary: Envoyer une demande de paiement en masse
+  security:
+    - OAuth2: [demande_paiement_groupe.write]
+  description: |
+    Ce point de terminaison permet au client business d'envoyer plusieurs demandes de paiement à la fois.
+
+    La catégorie des demandes de paiement en masse est toujours `401` (Autres demandes de paiement de facture).
+
+    **Traitement asynchrone :** La création retourne immédiatement `202 Accepted`. Le traitement des transactions se fait de manière asynchrone.
+
+    **Sans confirmation (`confirmation: false` ou non spécifié) :**
+    - Les transactions sont créées et validées (unicité des txId)
+    - Les demandes de paiement sont envoyées directement aux payeurs
+    - Les transactions avec txId dupliqué sont automatiquement rejetées avec le code `DU03`
+    - Les transactions avec alias de payeur invalide sont automatiquement rejetées avec le code `BE23`
+
+    **Avec confirmation (`confirmation: true`) :**
+    - Les transactions sont créées et validées (unicité des txId + recherche d'alias des payeurs)
+    - Les transactions avec alias de payeur invalide sont rejetées avec le code `BE23`
+    - Les transactions avec txId dupliqué sont rejetées avec le code `DU03`
+    - Les transactions valides passent à l'état `INITIE` avec les noms et pays des payeurs
+    - Le business dispose d'un **délai adaptatif** pour confirmer ou annuler via `PUT /demandes-paiements-groupes/{instructionId}/confirmations` :
+      - **1 à 500 transactions** : 24 heures
+      - **501 à 1000 transactions** : 48 heures
+      - **Plus de 1000 transactions** : 72 heures
+    - Lors de la confirmation, seules les transactions `INITIE` sont envoyées (les transactions `REJETE` sont automatiquement exclues)
+    - Passé le délai, la demande expire automatiquement
+
+    **Consultation des détails :**
+    - Statut global du bulk : `GET /demandes-paiements-groupes/{instructionId}`
+    - Liste de toutes les transactions : `GET /demandes-paiements?instructionId={instructionId}`
+    - Seulement les rejetées (validation) : `GET /demandes-paiements?instructionId={instructionId}&statut=REJETE`
+    - Seulement les valides (avec noms/pays des payeurs) : `GET /demandes-paiements?instructionId={instructionId}&statut=INITIE`
+
+    **Convention de nommage des instructionId (important) :**
+
+    L'`instructionId` doit être **unique** pour chaque création de bulk. Pour faciliter le suivi métier, nous recommandons la convention suivante :
+
+    ```
+    <IDENTIFIANT_METIER>-<NUMERO_TENTATIVE>
+    ```
+
+    **Exemples :**
+    - Première tentative : `FACTURES-2025-01-1` (factures de janvier 2025, tentative 1)
+    - Deuxième tentative : `FACTURES-2025-01-2` (corrections après échecs)
+    - Troisième tentative : `FACTURES-2025-01-3` (nouvelles corrections)
+
+    **Avantages :**
+    - ✅ Chaque bulk a un statut indépendant (INITIE, CONFIRME, ANNULE)
+    - ✅ Traçabilité claire des tentatives successives
+    - ✅ Possibilité de filtrer par identifiant métier : `GET /demandes-paiements?instructionId[beginsWith]=FACTURES-2025-01`
+    - ✅ Respect de l'unicité de l'instructionId
+
+  operationId: demandePaiementGroupeCreer
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: "../../schemas/demandes-de-paiement/DemandePaiementEnMasseRequest.yml"
+        examples:
+          sans-confirmation:
+            summary: "Demande de paiement en masse sans confirmation"
+            description: "Envoi direct des demandes de paiement sans vérification préalable"
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementEnMasseRequete.yml"
+          avec-confirmation:
+            summary: "Demande de paiement en masse avec confirmation"
+            description: "Vérification des alias des payeurs avant envoi des demandes"
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementEnMasseRequeteAvecConfirmation.yml"
+    required: true
+  responses:
+    "202":
+      description: |
+        La demande a été acceptée et est en cours de traitement.
+
+        Consultez le statut via `GET /demandes-paiements-groupes/{instructionId}`.
+      headers:
+        Location:
+          description: URL pour consulter le statut de la demande de paiement en masse
+          schema:
+            type: string
+            example: "/demandes-paiements-groupes/FACTURES-2025-01-1"
+    "409":
+      description: Conflit - instructionId déjà utilisé
+      content:
+        application/problem+json:
+          schema:
+            $ref: "../../schemas/commons/Problem7807.yml"
+          examples:
+            instructionId-duplique:
+              summary: "instructionId déjà existant"
+              value:
+                type: "about:blank"
+                title: "Conflict"
+                status: 409
+                detail: "Une demande de paiement en masse avec cet instructionId existe déjà"
+                invalid-params:
+                  - name: instructionId
+                    reason: "L'instructionId 'FACTURES-2025-01-1' est déjà utilisé par une autre demande de paiement en masse"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "400":
+      $ref: "../../responses/commons/FormatInvalide.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"
+
+# Lister les demandes de paiement en masse
+get:
+    tags:
+      - DemandesDePaiementEnMasse
+    summary: Lister les demandes de paiement en masse
+    security:
+      - OAuth2: [demande_paiement_groupe.read]
+    description: |
+      Ce point de terminaison permet de consulter la liste de toutes les demandes de paiement en masse.
+
+      Pour chaque demande de paiement en masse, les informations retournées incluent :
+      - L'instructionId de la demande
+      - Le statut (INITIE, CONFIRME, ANNULE)
+      - La date de création de la demande
+
+      Pour obtenir les détails complets d'une demande spécifique, utilisez `GET /demandes-paiements-groupes/{instructionId}`.
+    operationId: demandesPaiementGroupeLister
+    parameters:
+      # Filtres
+      - name: statut
+        in: query
+        schema:
+          type: string
+          enum: [INITIE, CONFIRME, ANNULE]
+          title: Statut de la demande
+          description: Filtre les demandes selon le statut
+
+      # Pagination
+      - $ref: "../../parameters/Page.yml"
+      - $ref: "../../parameters/ItemsParPage.yml"
+      - $ref: "../../parameters/SortBy.yml"
+
+    responses:
+      "200":
+        description: Succès de l'opération
+        content:
+          application/json:
+            schema:
+              $ref: "../../schemas/demandes-de-paiement/DemandePaiementEnMasseListe.yml"
+            examples:
+              liste-demandes:
+                $ref: "../../examples/demandes-de-paiement/DemandePaiementEnMasseListe.yml"
+      "401":
+        $ref: "../../responses/commons/AutorisationsManquantes.yml"
+      "429":
+        $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+      "503":
+        $ref: "../../responses/commons/ProblemeServeur.yml"

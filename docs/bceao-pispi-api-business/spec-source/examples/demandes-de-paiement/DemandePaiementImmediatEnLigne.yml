@@ -1,0 +1,11 @@
+summary: Paiement immédiat en ligne (e-commerce)
+value:
+  txId: "RTP-2023-002"
+  confirmation: false
+  categorie: "521"
+  payeurAlias: "9b1b3499-3e50-435b-b757-ac7a83d8aa96"
+  payeAlias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+  logoUrl: https://developers.pi-bceao.com/assets/images/logo/Logo_SPI_1.png
+  montant: 25000
+  dateLimitePaiement: "2023-02-21T15:37:00.000Z"
+  motif: "Paiement du livre Manuel des écritures comptables"

@@ -1,0 +1,11 @@
+# Page:
+in: query
+name: page
+required: false
+schema:
+  title: Page demandée
+  type: string
+  description: >-
+    Page à retourner par la requête. S'il n'est pas renseigné, le PSP renverra la valeur par défaut.
+
+    Le type string permet de supporter aussi bien les valeurs numériques ("1", "2") que d'autres formats de pagination (curseurs, tokens).

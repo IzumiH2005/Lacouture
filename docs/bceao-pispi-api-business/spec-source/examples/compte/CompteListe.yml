@@ -1,0 +1,17 @@
+summary: "Liste de comptes"
+value:
+  data:
+    - numero: "CIC2344256727788288822"
+      type: "CACC"
+      dateOuverture: "2023-02-21"
+      statut: "OUVERT"
+    - numero: "CIC2344256727788288833"
+      type: "SVGS"
+      dateOuverture: "2023-03-15"
+      statut: "OUVERT"
+    - numero: "CIC2344256727788288844"
+      type: "CACC"
+      dateOuverture: "2023-01-10"
+      statut: "BLOQUE"
+  meta:
+    total: 3

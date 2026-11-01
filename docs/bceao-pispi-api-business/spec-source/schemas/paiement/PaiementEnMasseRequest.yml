@@ -1,0 +1,125 @@
+# Modèle Paiement en masse
+# PaiementEnMasseRequest
+type: object
+properties:
+  instructionId:
+    type: string
+    example: true
+    maxLength: 35
+    description: Identifiant du paiement en masse dans le SI du client
+
+  payeurAlias:
+    type: string
+    example: "9b1b3499-3e50-435b-b757-ac7a83d8aa96"
+    description: |
+      L'alias du compte du client business qui sera débité pour le paiement.
+
+  confirmation:
+    type: boolean
+    default: false
+    description: |
+      Indique si une confirmation du business est requise avant d'exécuter les paiements.
+
+      - `true` : Le PSP effectue la recherche d'alias pour tous les bénéficiaires, retourne leurs noms et pays, et attend la confirmation du business avant d'exécuter les paiements.
+      - `false` : Le PSP exécute directement les paiements sans attendre de confirmation.
+
+      **Note :** Si `true`, le business doit confirmer via `PUT /paiements-groupes/{instructionId}/confirmations` dans un délai adaptatif (24h, 48h ou 72h selon le nombre de transactions).
+
+  motif:
+    type: string
+    description: |
+      Le motif commun à tous les paiements du groupe.
+      Si tous les paiements du groupe ont le même motif, ce champ peut être utilisé pour optimiser la taille du lot.
+      Dans le cas contraire, chaque transaction doit avoir son propre motif.
+    maxLength: 140
+
+  transactions:
+    type: array
+    items:
+      type: object
+      properties:
+        txId:
+          type: string
+          description: Identifiant de la transaction dans le SI du client
+          maxLength: 35
+
+        payeAlias:
+          type: string
+          example: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+          description: |
+            L'alias du client payé, bénéficiaire de l'ordre de paiement.
+            À fournir **à la place** de `payeIban`/`payeOther`. Ne pas combiner avec `payeParticipant`.
+          maxLength: 36
+
+        payeIban:
+          type: string
+          example: "SN15SN0150101307430029018"
+          description: |
+            L'IBAN du client payé.
+            À fournir avec `payeParticipant`, **à la place** de `payeAlias` et `payeOther`.
+          maxLength: 35
+
+        payeOther:
+          type: string
+          example: "12345678901234"
+          description: |
+            Le numéro de compte du client payé (référence OTHER, tout participant y compris une banque).
+            À fournir avec `payeParticipant`, **à la place** de `payeAlias` et `payeIban`.
+          maxLength: 35
+
+        payeParticipant:
+          type: string
+          example: "SNB015"
+          description: |
+            Le participant du client payé.
+            Requis avec `payeIban` ou `payeOther`. Ne pas fournir avec `payeAlias`.
+          maxLength: 6
+
+        montant:
+          type: number
+          example: 15000
+          description: Le montant du transfert de fonds à effectuer
+
+        motif:
+          type: string
+          description: |
+            Le motif du paiement.
+            Si tous les paiements du groupe ont le même motif, ce champ doit être omis, et le motif du groupe doit être utilisé.
+          maxLength: 140
+
+        refDocNumero:
+          type: string
+          description: Le numéro / la référence du document justificatif
+          maxLength: 35
+
+        refDocType:
+          $ref: "../commons/RefDocType.yml"
+      required:
+        - txId
+        - montant
+      oneOf:
+        - title: Paiement par alias
+          description: |
+            Le destinataire est identifié par son alias de compte.
+            Les champs `payeIban`, `payeOther` et `payeParticipant` ne doivent pas être fournis.
+          required:
+            - payeAlias
+        - title: Paiement par IBAN
+          description: |
+            Le destinataire est identifié par son IBAN auprès d'une banque participante.
+            Les champs `payeAlias` et `payeOther` ne doivent pas être fournis.
+          required:
+            - payeIban
+            - payeParticipant
+        - title: Paiement par autre compte
+          description: |
+            Le destinataire est identifié par son numéro de compte (référence OTHER) auprès du participant destinataire, banque comprise.
+            Les champs `payeAlias` et `payeIban` ne doivent pas être fournis.
+          required:
+            - payeOther
+            - payeParticipant
+additionalProperties: false
+required:
+  - instructionId
+  - payeurAlias
+  - transactions

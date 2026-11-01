@@ -1,0 +1,5 @@
+# Exemple d'acceptation d'une demande d'annulation
+summary: "Accepter une demande d'annulation"
+description: "Le business accepte la demande d'annulation et s'engage à effectuer un retour de fonds"
+value:
+  decision: true

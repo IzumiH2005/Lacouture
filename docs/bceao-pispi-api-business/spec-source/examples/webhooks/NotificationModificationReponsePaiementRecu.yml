@@ -1,0 +1,8 @@
+summary: "Un webhook modifié"
+value:
+  id: 12345-7785-zrr5r5v-rf5v5f-r5ffc55a
+  callbackUrl: "https://businessmerchant.com/api/piz/webhooks/"
+  events:
+    - PAIEMENT_RECUE
+  dateCreation: "2023-02-21T15:30:01.250Z"
+  dateModification: "2023-06-21T15:30:01.250Z"

@@ -1,0 +1,197 @@
+oneOf:
+  - title: Paiement immédiat sur site
+    description: Demande de paiement immédiat en point de vente physique (categorie=500)
+    allOf:
+      - type: object
+        properties:
+          categorie:
+            type: string
+            enum: ["500"]
+        required:
+          - categorie
+      - $ref: "./DemandePaiementRequestBase.yml"
+
+  - title: Paiement sur site PICO (achat avec retrait espèces)
+    description: Paiement sur site (categorie=500) avec achat ET retrait d'espèces
+    allOf:
+      - type: object
+        properties:
+          categorie:
+            type: string
+            enum: ["500"]
+          montantAchat:
+            type: number
+            description: Montant de l'achat
+          montantRetrait:
+            type: number
+            description: Montant du retrait d'espèces (Inclus le montant des frais)
+          montantFrais:
+            type: number
+            description: Frais de retrait
+        required:
+          - categorie
+          - montantAchat
+          - montantRetrait
+      - $ref: "./DemandePaiementRequestBase.yml"
+
+  - title: Paiement sur site PICASH (retrait espèces uniquement)
+    description: Retrait d'espèces uniquement (categorie=500) sans achat
+    allOf:
+      - type: object
+        properties:
+          categorie:
+            type: string
+            enum: ["500"]
+          montantRetrait:
+            type: number
+            description: Montant du retrait d'espèces
+          montantFrais:
+            type: number
+            description: Frais de retrait
+        required:
+          - categorie
+          - montantRetrait
+      - $ref: "./DemandePaiementRequestBase.yml"
+
+  - title: Paiement sur site avec débit différé
+    description: Achat en magasin avec paiement différé (categorie=500) et remise avec taux max 1%
+    allOf:
+      - type: object
+        properties:
+          categorie:
+            type: string
+            enum: ["500"]
+          debitDiffere:
+            type: boolean
+            enum: [true]
+            description: Indique que le paiement est différé (Acheter maintenant, payer plus tard)
+          remise:
+            type: object
+            description: Remise appliquée sur la facture
+            oneOf:
+              - title: Remise par montant
+                required: ["montant"]
+                properties:
+                  montant:
+                    type: number
+                    description: Montant de la remise
+              - title: Remise par taux
+                required: ["taux"]
+                properties:
+                  taux:
+                    type: number
+                    enum: [1]
+                    description: Taux de remise (1%)
+
+        required:
+          - categorie
+          - debitDiffere
+          - remise
+      - $ref: "./DemandePaiementRequestBase.yml"
+
+  - title: Paiement immédiat e-commerce
+    description: Demande de paiement immédiat pour e-commerce (categorie=521) avec délai de 2 minutes
+    allOf:
+      - type: object
+        properties:
+          categorie:
+            type: string
+            enum: ["521"]
+          dateLimitePaiement:
+            type: string
+            format: date-time
+            description: Date limite de paiement (2 minutes après création)
+        required:
+          - categorie
+          - dateLimitePaiement
+      - $ref: "./DemandePaiementRequestBase.yml"
+
+  - title: Paiement e-commerce avec débit différé
+    description: E-commerce (categorie=521) avec débit différé et remise
+    allOf:
+      - type: object
+        properties:
+          categorie:
+            type: string
+            enum: ["521"]
+          debitDiffere:
+            type: boolean
+            enum: [true]
+            description: Indique que le paiement est différé
+          remise:
+            type: object
+            description: Remise appliquée
+            properties:
+              montant:
+                type: number
+                description: Montant de la remise
+              taux:
+                type: number
+                description: Taux de remise
+            oneOf:
+              - required: ["montant"]
+              - required: ["taux"]
+        required:
+          - categorie
+          - debitDiffere
+          - remise
+      - $ref: "./DemandePaiementRequestBase.yml"
+
+  - title: Paiement de facture sans remise
+    description: Demande de paiement de facture (categorie=401) avec dates limites de paiement et de réponse
+    allOf:
+      - type: object
+        properties:
+          categorie:
+            type: string
+            enum: ["401"]
+          dateLimitePaiement:
+            type: string
+            format: date-time
+            description: Date limite de paiement de la facture (ex "A payer avant")
+          dateLimiteReponse:
+            type: string
+            format: date-time
+            description: Date limite de réponse
+        required:
+          - categorie
+          - dateLimitePaiement
+      - $ref: "./DemandePaiementRequestBase.yml"
+
+  - title: Paiement de facture avec remise
+    description: Paiement de facture (categorie=401) avec remise sur montant
+    allOf:
+      - type: object
+        properties:
+          categorie:
+            type: string
+            enum: ["401"]
+          dateLimitePaiement:
+            type: string
+            format: date-time
+            description: Date limite de paiement
+          dateLimiteReponse:
+            type: string
+            format: date-time
+            description: Date limite de réponse
+          remise:
+            type: object
+            description: Remise appliquée sur la facture - la remise n'est pas appliquée après la date limite de paiement
+            oneOf:
+              - title: Remise par montant
+                required: ["montant"]
+                properties:
+                  montant:
+                    type: number
+                    description: Montant de la remise
+              - title: Remise par taux
+                required: ["taux"]
+                properties:
+                  taux:
+                    type: number
+        required:
+          - categorie
+          - dateLimitePaiement
+          - dateLimiteReponse
+          - remise
+      - $ref: "./DemandePaiementRequestBase.yml"

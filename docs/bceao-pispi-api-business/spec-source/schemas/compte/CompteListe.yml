@@ -1,0 +1,13 @@
+# Modèle Liste de Comptes
+type: object
+properties:
+  data:
+    type: array
+    items:
+      $ref: "./CompteItem.yml"
+  meta:
+    type: object
+    properties:
+      total:
+        type: number
+        description: Total d'éléments correspondants à la recherche

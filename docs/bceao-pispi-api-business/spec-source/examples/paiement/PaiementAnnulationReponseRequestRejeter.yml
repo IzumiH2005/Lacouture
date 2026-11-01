@@ -1,0 +1,5 @@
+# Exemple de refus d'une demande d'annulation
+summary: "Refuser une demande d'annulation"
+description: "Le business refuse la demande d'annulation"
+value:
+  decision: false

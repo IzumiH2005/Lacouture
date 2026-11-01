@@ -1,0 +1,7 @@
+summary: "Réponse à la demande de paiement déjà envoyée"
+value:
+  type: "about:blank"
+  title: "Bad Request"
+  status: 403
+  detail: |
+    la demande de paiement est déjà acceptée. le paiement est envoyé.

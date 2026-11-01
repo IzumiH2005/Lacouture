@@ -1,0 +1,13 @@
+summary: Notification de retour de fonds envoyé
+value:
+  data:
+    - evCode: RETOUR_ENVOYE
+      evDate: "2023-02-21T15:35:54.550Z"
+      txId: "23552722"
+      montant: 12000
+      client: Seini DIOUM
+      alias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+      end2endId: ESNB00120230221153554KXvozkpNvhUk9e
+      motif: CUST
+  meta:
+    total: 1

@@ -1,0 +1,11 @@
+summary: "Paiement en masse annulé"
+value:
+  instructionId: "123-5678292"
+  statut: "ANNULE"
+  dateDemande: "2024-10-17T10:00:00.000Z"
+  dateAnnulation: "2024-10-17T10:05:00.000Z"
+  transactionsTotal: 7
+  transactionsInitiees: 5
+  transactionsEnvoyees: 0
+  transactionsIrrevocables: 0
+  transactionsRejetees: 2

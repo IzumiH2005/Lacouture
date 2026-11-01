@@ -1,0 +1,8 @@
+# 503
+# Problem7807ExempleInternalServerErrorJSON:
+summary: "Problème erreur interne serveur"
+value:
+  type: "about:blank"
+  title: "Internal Server Error"
+  status: 500
+  detail: "Une erreur inattendue a empêché le serveur de traiter la requête."

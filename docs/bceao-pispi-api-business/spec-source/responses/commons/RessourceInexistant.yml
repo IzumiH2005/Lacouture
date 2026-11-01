@@ -1,0 +1,10 @@
+# 404
+# RessourceInexistant:
+description: La ressource n'existe pas dans le système
+content:
+  application/problem+json:
+    schema:
+      $ref: "../../schemas/commons/Problem7807.yml"
+    examples:
+      exemple:
+        $ref: "../../examples/commons/Problem7807ExempleNotFoundJSON.yml"

@@ -1,0 +1,91 @@
+parameters:
+  - name: txId
+    in: path
+    description: L'identifiant de la transaction dans le SI du payé
+    required: true
+    schema:
+      type: string
+put:
+  tags:
+    - DemandesDePaiement
+  summary: Confirmer la demande
+  security:
+    - OAuth2: [demande_paiement.write]
+  description: |
+    Ce point de terminaison permet d'envoyer la confirmation de l'envoi d'une demande de paiement.
+
+    Le client business confirme oui ou non si le PSP peut envoyer la demande au payeur après vérification des informations d'identification (nom et pays du payeur).
+
+    **Idempotence** : Cet endpoint est idempotent.
+    - Premier appel avec `decision: true` → Envoie la demande, retourne `200 OK {statut: "ENVOYE"}`
+    - Appels suivants avec `decision: true` → Retourne `200 OK` avec l'état actuel (ENVOYE, IRREVOCABLE, ou REJETE) - idempotent
+    - Premier appel avec `decision: false` → Annule, retourne `200 OK {statut: "ANNULE"}`
+    - Appels suivants avec `decision: false` → Retourne `200 OK {statut: "ANNULE"}` (idempotent)
+    - `decision: true` après `decision: false` → Retourne `403 Forbidden` (déjà annulé)
+    - `decision: false` après `decision: true` → Retourne `403 Forbidden` (déjà confirmé)
+
+    **Timeout** : La confirmation doit être envoyée dans les **24 heures** suivant la création de la demande. Passé ce délai, la demande expire automatiquement et ne peut plus être confirmée.
+
+    **Changement de décision** : Une fois une décision prise, elle est définitive. Impossible de confirmer après avoir annulé, et vice-versa.
+
+  operationId: demandePaiementConfirmer
+  requestBody:
+    description: Le client envoie oui ou non s'il confirme l'envoi de la demande
+    content:
+      application/json:
+        schema:
+          $ref: "../../schemas/demandes-de-paiement/DemandePaiementConfirmationRequest.yml"
+        examples:
+          confirme:
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementConfirmationRequeteCasConfirmationOui.yml"
+          annule:
+            $ref: "../../examples/demandes-de-paiement/DemandePaiementConfirmationRequeteCasConfirmationNon.yml"
+    required: true
+  responses:
+    "200":
+      description: Opération effectuée avec succès
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/demandes-de-paiement/DemandePaiementConfirmationReponse.yml"
+          examples:
+            confirmation-oui:
+              $ref: "../../examples/demandes-de-paiement/DemandePaiementConfirmationReponseCasOui.yml"
+            confirmation-non:
+              $ref: "../../examples/demandes-de-paiement/DemandePaiementConfirmationReponseCasNon.yml"
+    "403":
+      description: Opération interdite
+      content:
+        application/problem+json:
+          schema:
+            $ref: "../../schemas/commons/Problem7807.yml"
+          examples:
+            decision-true-apres-false:
+              summary: "Tentative de confirmation après annulation"
+              value:
+                type: "about:blank"
+                title: "Forbidden"
+                status: 403
+                detail: "Impossible de confirmer une demande de paiement déjà annulée"
+            decision-false-apres-true:
+              summary: "Tentative d'annulation après confirmation"
+              value:
+                type: "about:blank"
+                title: "Forbidden"
+                status: 403
+                detail: "Impossible d'annuler une demande de paiement déjà confirmée"
+            timeout-depasse:
+              summary: "Délai de confirmation dépassé"
+              value:
+                type: "about:blank"
+                title: "Forbidden"
+                status: 403
+                detail: "Le délai de confirmation de 24 heures a été dépassé"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "404":
+      $ref: "../../responses/commons/RessourceInexistant.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"

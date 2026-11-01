@@ -1,0 +1,46 @@
+parameters:
+  - name: txId
+    in: path
+    description: txId de la transaction reçue par le business
+    required: true
+    schema:
+      type: string
+# verifier le statut d'un paiement reçu
+get:
+  tags:
+    - PaiementRecu
+  summary: Détails d'un paiement
+  security:
+    - OAuth2: [paiement.read]
+  description: |
+    Cet point de terminaison permet de consulter un paiement reçu par le business à partir du txId.
+
+    Lorsque c'est un paiement reçu par QR Code, le txId correspond au champ `reference label` du QR Code.
+    Pour un QR Code statique, le dernier paiement reçu est retourné.
+
+    Lorsque c'est un paiement reçu par demande de paiement, le txId correspond au champ `txId` de la demande de paiement.
+
+    Si aucun paiement reçu avec ce txId n'est trouvé, la réponse est 404 Not Found.
+  # Pour les autres canaux (999, 300, 733), le txId correspond à l'identifiant du payeur.
+  operationId: paiementRecuRecuperer
+  responses:
+    "200":
+      description: Opération effectuée avec succès
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/paiement/Paiement.yml"
+          examples:
+            paiement-recu:
+              $ref: "../../examples/paiement/PaiementRecu.yml"
+            retour-de-fonds-rejete:
+              $ref: "../../examples/paiement/PaiementRetourReponseRejete.yml"
+
+    "404":
+      $ref: "../../responses/commons/RessourceInexistant.yml"
+    "401":
+      $ref: "../../responses/commons/AutorisationsManquantes.yml"
+    "429":
+      $ref: "../../responses/commons/LimiteUtilisationDepasse.yml"
+    "503":
+      $ref: "../../responses/commons/ProblemeServeur.yml"

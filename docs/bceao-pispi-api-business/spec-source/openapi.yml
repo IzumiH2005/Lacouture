@@ -1,0 +1,874 @@
+openapi: 3.0.3
+info:
+  title: PI - API BUSINESS - OpenAPI 3.0
+  x-logo:
+    url: "https://developers.pi-bceao.com/assets/images/logo/Logo_SPI_1.png"
+
+  description: |
+    # Généralités
+
+    L'API Business est une API exposée par les participants (PSP) de la Plateforme d'Interopérabilité PI à leurs clients business.
+
+    Elle permet au participant de fournir des services d’automatisation des opérations de paiement à son client :
+
+    - Créer des alias de compte
+    - Recevoir des paiements
+    - Retourner des paiements
+
+    - Envoyer des paiements
+    - Effectuer des paiements en masse
+    - Envoyer des demandes d'annulation
+
+    - Envoyer des demandes de paiements
+    - Envoyer des demandes de paiements en masse
+
+    - Consulter la liste des opérations
+    - Consulter les détails d'une opération
+    - Effectuer des transferts entre ses comptes
+    - Consulter la liste des participants PI
+
+
+    Cette spécification a pour but d'encadrer les solutions à valeurs ajoutées offertes par les participants à leurs clients business.
+    Elle permettra ainsi de faciliter l'interopérabilité et d'éviter le cloisonnement des solutions techniques mises en œuvre.
+
+    ## Gestion des versions
+
+    La stratégie de développement de l'API est de maintenir la rétrocompatibilité entre l'API et ses ressources et services dans la mesure du possible.
+    Les APIs utilisent la spécification __SemVer__ (La gestion sémantique de versions); en ce sens, les modifications compatibles ne doivent pas générer une nouvelle version majeure.
+
+    La version de l’API utilise ainsi le format` MAJEUR.MINEUR.CORRECTIF`
+    * le numéro de version `MAJEUR` quand il y a des changements non rétrocompatibles,
+    * le numéro de version `MINEUR` quand il y a des ajouts de fonctionnalités rétrocompatibles,
+    * le numéro de version de `CORRECTIF` quand il y a des corrections d’anomalies rétrocompatibles.
+
+    Chaque fois qu'un changement dans ce document définissant les caractéristiques de l'API est mis à jour et affecte d'une manière ou d'une autre un service d'API, une nouvelle version de l’API sera publiée.
+    La version initiale de chaque API est `1.0.0`.
+
+    ### __1) Versions de correction__
+    L’identifiant de version de correction est  incrémenté si des corrections rétrocompatibles sont introduites. Une correction est définie comme un changement interne qui corrige un comportement incorrect.
+
+    ### __2) Versions mineures__
+    Certaines modifications n'affectent pas la version de la ressource API; par exemple, si l'ordre des paramètres dans une requête change.
+
+    La liste suivante décrit quelques modifications considérées comme rétrocompatibles. Les participants doivent implémenter leur système de manière à ce que les services d'API prennent automatiquement en charge ces modifications sans interrompre le fonctionnement du système:
+    * paramètres de requêtes facultatifs
+    * ajout de nouveaux codes d'erreur
+
+    Ces types de modifications affectent la version mineure du service d'API.
+
+    ### __3) Versions majeures__
+    La liste suivante décrit les modifications considérées comme rétro-incompatibles si la modification affecte un service d'API connecté à une ressource. Les intégrateurs d'API n'ont pas besoin d'implémenter de manière à prendre automatiquement en charge ces modifications.
+    En effet, pour des changements importants, un plan de migration sera défini et dépendra de la nature de ces changements.
+    Les situations suivantes peuvent entraîner la publication d’une version majeure:
+    * Paramètres obligatoires supprimés ou ajoutés à une requête
+    * Paramètres facultatifs changés en obligatoires dans une requête
+    * Paramètres renommés
+    * Types de données modifiés
+    * La logique métier d’un service modifiée
+    * Les URI de ressource/service d'API modifiées
+
+    Ces types de modifications affectent la version principale du service d'API. Veuillez noter que la liste n'est pas exhaustive ; il peut également y avoir d'autres modifications susceptibles d'affecter la version principale du service d'API.
+    ### __4) Informations de version__
+    La gestion des versions s’effectuera via le chemin URI qui consiste à inclure le numéro de version dans le chemin URI et permet de gérer facilement plusieurs versions parallèles de l’API.
+    Le numéro de version majeure sera inclus dans l’URL de l’API comme suit: __https://www.example.com/api/v1/products__
+
+    ## Notes de version
+    Pour consulter les changements apportés à l'API, veuillez consulter le [changelog](./CHANGELOG.md).
+
+    ## Gestion des erreurs
+
+    L'API BUSINESS renvoie des codes d'états HTTP pour indiquer le succès ou l'échec à l'issue du traitement d'une requête
+
+      - Les codes `2xx` indiquent un succès.
+
+      - Les codes `4xx` indiquent un échec causé par les informations envoyées par le client ou l'état actuel des entités.
+
+      - Les codes `5xx` généralement liés aux serveurs ou à l'application
+
+      - Les réponses d'erreur incluent dans le corps les détails de l'erreur.
+
+      - Le champ `type` identifie le type d'erreur rencontrée.
+
+    En ce qui concerne les réponses notifiant une erreur, PI utilise le format décrit dans la `RFC 7807` qui décrit comment les API peuvent renvoyer des informations d'erreur de manière standardisée.  Une telle réponse contient les éléments suivants :
+    <table>
+      <tr>
+        <td><b>type</b></td>
+        <td>Le champ "type" est une URI unique qui identifie le type de problème. L’URI peut être relative.</td>
+      </tr>
+      <tr>
+        <td><b>title</b></td>
+        <td>Le champ "title"  fournit une description courte pour comprendre le problème. Il est identique pour le même type de problème.</td>
+      </tr>
+      <tr>
+        <td><b>detail</b></td>
+        <td>Le champ "detail" donne des explications sur le problème.</td>
+      </tr>
+      <tr>
+        <td><b>instance</b></td>
+        <td>Il indique une référence URI de ressource concernée par le problème. Il est optionnel.</td>
+      </tr>
+      <tr>
+        <td><b>status</b></td>
+        <td>Le champ "status" renvoie le code de statut HTTP qui a déclenché cette réponse. Ce champ est optionnel.</td>
+      </tr>
+    </table>
+
+    Pour donner des informations détaillées sur le problème, des extensions sont permises. Les extensions sont des champs additionnels qui peuvent figurer dans la réponse.
+
+    Ci-dessous un exemple de réponse en JSON:
+
+    <img src="./images/exemple-erreur-json.png" />
+
+    Ici, le problème `format-invalide` __(identifié par son type URI)__  indique la raison de l’erreur `400` retournée par le serveur lors de la création d’un client; deux extensions sont ajoutées: `typeClient` qui indique le __champ incorrect__, et `invalid-params` qui indiquent les __paramètres invalides et la raison d’invalidité__.
+    Par ailleurs, l'URI de type d'un problème devrait référencer une page HTML expliquant comment résoudre le problème. Cependant des types prédéfinis existent: c’est le cas du type `about:blank` qui indique que __le problème n'a pas de sémantique supplémentaire au-delà de celle du code de statut HTTP__. Lorsque `about:blank` est utilisé, le champ `title` est le même que le libellé du statut HTTP comme montré dans l’exemple suivant:
+
+    Les erreurs suivantes peuvent être renvoyées par n'importe quel endpoint de l'API:
+
+    ### `BadRequest`
+
+      * Signification: Requête invalide.
+      * __HTTP Status Code__: [400 Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1).
+
+    ### `Unauthorized`
+
+      * Signification: Requête non authentifiée. Les informations d'authentification sont manquantes ou invalides.
+      * __HTTP Status Code__: [401 Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1).
+
+    ### `Forbidden`
+
+      * Signification: Requête authentifiée qui enfreint une règle d'autorisation.
+      * __HTTP Status Code__: [403 Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3).
+
+    ### `NotFound`
+
+      * Signification: Entité non trouvée.
+      * __HTTP Status Code__: [404 Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4).
+
+    ### `Gone`
+
+      * Signification: Indique que l'entité a existé mais qu'elle a été définitivement supprimée.
+      * __HTTP Status Code__: [410 Gone](https://tools.ietf.org/html/rfc7231#section-6.5.9).
+
+    ### `InternalServerError`
+
+      * Signification: Erreur interne du serveur
+      * __HTTP Status Code__: [500 Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1).
+
+    ### `BadGateway`
+
+      * Signification: Le serveur a reçu une réponse invalide du serveur en amont.
+      * __HTTP Status Code__: [502 Bad Gateway](https://tools.ietf.org/html/rfc7231#section-6.6.3).
+
+    ### `ServiceUnavailable`
+
+      * Signification: Le service n'est pas disponible actuellement. Le service demandé peut être en cours de maintenance ou en dehors de la fenêtre d'exploitation.
+      * __HTTP Status Code__: [503 Service Unavailable](https://tools.ietf.org/html/rfc7231#section-6.6.4).
+
+    ### `GatewayTimeout`
+
+      * Signification: Indique que le service a mis plus de temps que prévu à revenir.
+      * __HTTP Status Code__: [504 Gateway Timeout](https://tools.ietf.org/html/rfc7231#section-6.6.5).
+
+
+    ## Pagination et filtres
+
+    Les endpoints qui retournent des listes de ressources utilisent un format de réponse standardisé pour assurer une expérience cohérente et faciliter la pagination et le filtrage.
+
+    ### Structure de la réponse
+
+    Toutes les listes suivent une structure commune avec deux sections principales :
+
+    ```json
+    {
+      "data": [...],  // Tableau contenant les éléments de la page actuelle
+      "meta": {...}   // Métadonnées sur la pagination et le nombre total d'éléments
+    }
+    ```
+
+    #### Section `data`
+    Contient le tableau des éléments de la page actuelle. Le nombre d'éléments est limité par le paramètre `size`.
+
+    #### Section `meta`
+    Contient les informations de pagination et de contexte :
+
+    ```json
+    {
+      "meta": {
+        "total": 100,                              // Nombre total d'éléments (optionnel, si calculé)
+        "page": 2,                    // Page actuelle (peut être un entier ou un token)
+        "size": 20,                                // Nombre d'éléments par page
+        "next": 3,  // Token ou numéro de la page suivante (optionnel)
+        "prev": 1   // Token ou numéro de la page précédente (optionnel)
+      }
+    }
+    ```
+
+    **Remarques importantes** :
+    - Les champs `page`, `next` et `prev` peuvent être des **nombres entiers** ou des **chaînes de caractères** (tokens)
+    - Le champ `total` est optionnel car son calcul peut être coûteux pour de grandes collections
+    - Les champs `next` et `prev` sont optionnels et absents s'il n'y a pas de page suivante ou précédente
+
+    ### Paramètres de pagination
+
+    Les paramètres de requête suivants permettent de contrôler la pagination :
+
+    #### Paramètres standards
+
+    - **`page`** : Identifie la page à récupérer
+      - Type : `integer` ou `string` (token)
+      - Par défaut : `1` (première page)
+      - Exemples :
+        - Pagination par numéro : `GET /comptes?page=2&size=20`
+        - Pagination par token : `GET /comptes?page=eyJrZXkiOiIxMjM0NTY3ODkifQ==&size=20`
+
+    - **`size`** : Nombre d'éléments par page
+      - Type : `integer`
+      - Valeur minimale : `1`
+      - Valeur maximale : `100` (peut varier selon l'endpoint)
+      - Par défaut : `20`
+      - Exemple : `GET /comptes?page=1&size=50`
+
+    #### Types de pagination
+
+    **Pagination par offset (numérique)** :
+    ```
+    GET /comptes?page=2&size=20
+    ```
+    Retourne les éléments 21 à 40 (page 2 × 20 éléments par page).
+
+    **Pagination par curseur (token)** :
+    ```
+    GET /comptes?page=eyJrZXkiOiIxMjM0NTY3ODkifQ==&size=20
+    ```
+    Utilise un token opaque pour garantir la cohérence lors de modifications fréquentes des données.
+
+    ### Filtrage des résultats
+
+    Les endpoints de liste supportent le filtrage via des paramètres de requête avec la syntaxe `propriete[operateur]=valeur` :
+
+    **Exemples** :
+    ```
+    # Filtrer par statut
+    GET /paiements-immediats?statut=IRREVOCABLE
+    GET /paiements-immediats?statut[ne]=INITIE
+
+    # Filtrer par date de début
+    GET /paiements-immediats?dateIrrevocabilite[gte]=2024-01-01
+
+    # Filtrer les demandes de paiement de type PICO (retrait dans le cadre d'un achat)
+    GET /demandes-paiements?montantAchat[exists]=true
+
+    # Filtrer les demandes de paiement de type PICASH (retrait simple)
+    GET /demandes-paiements?montantAchat[exists]=false&montantRetrait[exists]=true
+
+    # Combiner plusieurs filtres
+    GET /paiements-immediats?dateIrrevocabilite[gte]=2024-01-01&statut[ne]=INITIE
+    ```
+
+    **Operateurs** :
+    - `eq` : égal à
+    - `ne` : différent de
+    - `gt` : supérieur à
+    - `gte` : supérieur ou égal à
+    - `lt` : inférieur à
+    - `lte` : inférieur ou égal à
+    - `in` : dans la liste
+    - `contains` : la liste ou la chaine de caractères contient la valeur
+    - `notContains` : la liste ou la chaine de caractères ne contient pas la valeur
+    - `beginsWith` : commence par la valeur
+    - `exists` : existe
+
+    ### Tri des résultats
+
+    Le paramètre `sort` permet de trier les résultats. Pour indiquer l'ordre de tri :
+
+    - **Sans préfixe** : tri ascendant (croissant)
+    - **Préfixe `-`** : tri descendant (décroissant)
+
+    **Syntaxe** : `sort=champ` ou `sort=-champ`
+
+    **Exemples** :
+    ```
+    # Trier par type croissant
+    GET /comptes/123456/alias?sort=type
+
+    # Trier par date décroissant
+    GET /paiements-immediats?sort=-dateCreation
+    ```
+
+    ### Exemples complets
+
+    **Liste simple sans pagination** :
+    ```
+    GET /comptes/123456/alias
+    ```
+
+    **Liste paginée avec taille personnalisée** :
+    ```
+    GET /paiements-immediats?page=1&size=50
+    ```
+
+    **Liste avec filtrage et tri** :
+    ```
+    GET /paiements-immediats?statut=IRREVOCABLE&sort=-dateCreation&page=1&size=20
+    ```
+
+    **Navigation vers la page suivante avec token** :
+    ```
+    # Première requête
+    GET /comptes?page=1&size=20
+
+    # Réponse
+    {
+      "data": [...],
+      "meta": {
+        "total": 150,
+        "size": 20,
+        "page": "1",
+        "next": "eyJrZXkiOiIxMjM0NTY3ODkifQ"
+      }
+    }
+
+    # Requête pour la page suivante
+    GET /comptes?page=eyJrZXkiOiIxMjM0NTY3ODkifQ&size=20
+    ```
+
+
+    # Sécurité
+
+    ## Sécurité de l'API
+
+    Les endpoints de l'API Business sont sécurisés de manière robuste, combinant à la fois:
+    - le protocole Mutual TLS (MTLS) pour une authentification forte au niveau du transport
+    - OAuth2 pour une gestion fine des autorisations.
+    Assurant ainsi une sécurité complète de l'accès aux ressources.
+
+    <SecurityDefinitions />
+
+  contact:
+    name: support
+    email: pisfn-sandbox@bceao.int
+
+  license:
+    name: Proprietary - BCEAO
+    url: https://www.bceao.int
+
+  version: 1.5.0
+
+# serveurs
+servers:
+  - url: https://sandbox.api.pi-bceao.com/piz/v1
+
+tags:
+  - name: Comptes
+    description: |
+      Le module de gestion des comptes permet aux clients business de gérer leurs comptes à distance et en toute sécurité.
+
+      Il offre trois fonctionnalités principales :
+
+      * **Consulter le solde d'un compte** : Obtenir à tout moment les informations relatives au solde et aux détails d'un compte spécifique.
+
+      * **Lister les opérations** : Afficher l'historique des opérations effectuées sur les comptes (en provenance ou à destination), avec des options de filtrage et de pagination.
+
+      * **Effectuer des transferts intra-comptes** : Initier des transferts de fonds entre les comptes détenus par le même client et domiciliés dans la même institution financière.
+
+  - name: Alias
+    description: |
+      Un alias de compte est une identification choisie par un client qui lui permet de recevoir des virements sans fournir les informations d’identification de son compte.
+
+      Les alias améliorent l’expérience client en permettant au client d'effectuer des transactions de manière transparente sans avoir besoin de connaître et de saisir les détails de compte bancaire du payé.
+      La correspondance entre un alias et un compte client est stockée dans le répertoire des alias centralisé (RAC) de la plateforme PI-SPI.
+
+  - name: Enrôlement
+    description: |
+      L'enrôlement de l'alias est le processus par lequel une entreprise enregistre et associe un alias — l'adresse de paiement — à chacun de ses clients ou fournisseurs.
+      Cet alias devient alors la référence utilisée pour recevoir ou envoyer des paiements, ce qui simplifie la gestion des opérations.
+
+      Pour plus d'informations, veuillez consulter la documentation sur l'enrôlement des alias.
+
+  - name: Participants
+    x-displayName: Participants PI
+    description: |
+      Cet endpoint permet de consulter la liste des participants raccordés à la plateforme PI-SPI.
+
+      Pour chaque participant sont retournés le code membre, le nom, le code banque (uniquement si le participant est une banque)
+      et le statut dans PI (`JOIN`, `ENBL`, `DSBL`, `DLTD`).
+
+      Cette liste est notamment utilisée pour identifier le participant destinataire lors d'un paiement
+      par numéro de compte via `POST /paiements-envoyes`.
+
+  - name: Notification
+    x-displayName: Gestion des webhooks
+    description: |
+      Les clients business peuvent configurer des webhooks pour recevoir des notifications lorsque des opérations sont effectuées sur leurs comptes.
+
+      Les webhooks sont une technologie utilisée pour établir une communication instantanée entre différents systèmes et plateformes,
+      permettant l'échange d'informations et de données en temps réel.
+
+      Dans le contexte de l'API business, les webhooks sont un moyen efficace de tenir les clients informés des mouvements financiers sur leurs comptes sans avoir à vérifier constamment la plateforme (polling).
+
+      Ainsi, lorsqu'un mouvement se produit sur un compte, comme un transfert ou une demande de paiement, le webhook se déclenche et envoie un message automatiquement au système du client, l'informant de l'opération effectuée.
+
+      Ce processus est très utile pour les clients qui ont besoin de suivre leurs comptes en temps réel, notamment les entreprises qui doivent gérer des flux financiers complexes. Il permet également d'**automatiser des actions métier** suite à la réception de notifications. Par exemple :
+      - Imprimer automatiquement un reçu lorsqu'un paiement est reçu
+      - Déclencher une livraison de produit ou service dès confirmation du paiement
+      - Mettre à jour automatiquement le statut d'une commande
+      - Envoyer des confirmations par email ou SMS au client final
+
+      De plus, les webhooks sont hautement personnalisables, permettant aux clients de configurer les notifications en fonction de leurs besoins de gestion et de suivi.
+
+      ## Types d'évènements
+      Il existe différentes catégories d'événements :
+
+      * Événements liés aux ordres de paiement
+      * Événements liés aux demandes de paiement
+      * Événements liés aux retours de fonds
+
+      ### Événements liés aux ordres de paiement
+      <table>
+        <tr>
+          <th>Code</th>
+          <th>Description de l'évènement</th>
+        </tr>
+        <tr>
+          <td><b>PAIEMENT_RECU</b></td>
+          <td>Lorsque le business reçoit un paiement ou lorsqu'une demande de paiement est acceptée</td>
+        </tr>
+        <tr>
+          <td><b>PAIEMENT_ENVOYE</b></td>
+          <td>Lorsque le business envoie un ordre de paiement et que celui-ci est irrévocable.
+        </tr>
+        <tr>
+          <td><b>PAIEMENT_REJETE</b></td>
+          <td>Lorsque le business envoie un ordre de paiement et que celui-ci est rejeté.
+        </tr>
+      </table>
+
+      ### Événements liés aux demandes de paiement
+      <table>
+        <tr>
+          <th>Code</th>
+          <th>Description de l'évènement</th>
+        </tr>
+        <tr>
+          <td><b>RTP_RECU</b></td>
+          <td>Lorsque le business reçoit une demande de paiement</td>
+        </tr>
+        <tr>
+          <td><b>RTP_REJETE</b></td>
+          <td>Lorsque le business envoie une demande de paiement et que cette demande est rejetée.
+        </tr>
+        <tr>
+          <td><b>RTP_REPONSE_REJETE</b></td>
+          <td>Lorsque le business rejette une demande de paiement et que cette réponse de rejet est rejetée.
+        </tr>
+      </table>
+
+      ### Événements liés aux retours de fonds et demandes d'annulation
+      <table>
+        <tr>
+          <th>Code</th>
+          <th>Description de l'évènement</th>
+        </tr>
+        <tr>
+          <td><b>ANNULATION_DEMANDE</b></td>
+          <td>Lorsque le business reçoit une demande d'annulation de paiement</td>
+        </tr>
+        <tr>
+          <td><b>ANNULATION_REPONSE_REJETE</b></td>
+          <td>Lorsque le business rejette une demande d'annulation de paiement et que cette réponse de rejet est rejetée.</td>
+        </tr>
+         <tr>
+          <td><b>RETOUR_ENVOYE</b></td>
+          <td>Lorsque le business envoie un retour de fonds et que celui-ci est irrévocable.
+        </tr>
+        <tr>
+          <td><b>RETOUR_REJETE</b></td>
+          <td>Lorsque le business envoie un retour de fonds et que celui-ci est rejeté.
+        </tr>
+        <tr>
+          <td><b>RETOUR_RECU</b></td>
+          <td>Lorsque le business reçoit un retour de fonds ou lorsqu'une demande d'annulation de paiement a été acceptée</td>
+        </tr>
+        <tr>
+          <td><b>ANNULATION_REJETE</b></td>
+          <td>Lorsque le business envoie une demande d'annulation de paiement et que celle-ci est rejetée.</td>
+        </tr>
+      </table>
+
+      ## Sécurité des webhooks
+
+      ### Cryptage des données
+      Toutes les communications doivent se faire en utilisant une connexion SSL.
+
+      ### Authentification
+      Le lien de rappel doit être protégé par un système d'authentification.
+      mTLS doit être utilisé pour gérer l'authentification du participant appelant.
+      Le certificat mTLS utilisé doit être délivré par une autorité de certification de la BCEAO.
+
+      ### Signature des données
+      Pour éviter les modifications indésirables, les événements doivent être signés.
+      Cela peut se faire via l'utilisation d'un code d'authentification de message basé sur le hachage (HMAC),
+      qui consiste en un algorithme de hachage et un code secret ou une clé que les deux parties partagent.
+
+  - name: DemandesDePaiement
+    x-displayName: Demandes de paiement
+    description: |
+      Une demande de paiement est une demande adressée à une personne ou à une entité pour solliciter le règlement d'un achat, d'un service rendu, d'une dette ou de toute autre obligation financière.
+
+      La demande de paiement indique au payeur identifié par son alias les modalités de réglement.
+
+      Les options de paiement du payeur sont données par `dateLimitePaiement` et `dateLimiteReponse`:
+      - la demande de paiement ne peut être acceptée ou rejetée apres _dateLimiteReponse_
+      - Lorsque _dateLimiteReponse_ n'est pas renseigné, la valeur par défaut est la date de la demande + 90 jours (3 mois)
+      - le date d'échéance du paiement doit être indiquée avec _dateLimitePaiement_
+      - Lorsqu'une remise est appliquée, elle reste valide jusqu'à _dateLimitePaiement_
+
+      Lorsqu'un client reçoit une demande de paiement, il peut choisir de:
+        1. `Accepter et Payer tout de suite`
+        2. `Accepter et Payer plus tard` (Programmer le paiement)
+        3. `Refuser`
+        4. `Ignorer`
+
+      Lorsque _dateLimiteReponse_ est inférieure à 24h, le paiement ne peut pas être programmé par le payeur.
+
+      Pour les demandes de paiement immédiats sur site, les champs _dateLimitePaiement_ et _dateLimiteReponse_ ne sont pas envoyés.
+      La demande expire au plus tard 24h après sa création.
+
+      Pour les demandes de paiement e-commerce et les demandes de paiement de facture, la  _dateLimitePaiement_ doit être renseignée.
+      Pour limiter l'exposition des clients aux cas de fraude, la  _dateLimitePaiement_ doit être inférieure à 3 minutes pour les demandes  de paiement e-commerce.
+
+  - name: DemandesDePaiementRecues
+    x-displayName: Demandes de paiement recues
+    description: |
+      Les demandes de paiement recues sont les demandes de paiement reçues par le business.
+      Le business peut accepter ou rejeter les demandes de paiement recues.
+
+  - name: DemandesDePaiementEnMasse
+    x-displayName: Demandes de paiement en masse
+    description: |
+      La demande de paiement en masse permet d'envoyer plusieurs demandes de paiement en une seule action.
+
+  - name: PaiementRecu
+    x-displayName: Paiements reçus
+    description: |
+      Cette fonctionnalité permet au business de consulter les paiements reçus.
+
+  - name: PaiementEnvoye
+    x-displayName: Paiements envoyés
+    description: |
+      Cette fonctionnalité permet au business d'effectuer des paiements à destination
+      - des clients de type **P** (Personne physique / Particulier),
+      - des clients de type **C** (Personne physique commerçante / Commerçant),
+      - des clients de type **B** (Entreprise / Business),
+      - des clients de type **G** (Entité gouvernementale)
+
+      ### Seuils de paiement
+
+      Les montants maximaux des paiements dépendent du type de client émetteur et du type de client destinataire.
+      Tous les montants sont exprimés en **francs CFA (XOF)**.
+
+      #### Montants maximaux par type de transaction
+
+      | Type de transaction | Émetteur | Destinataire | Montant maximum |
+      |---------------------|----------|--------------|-----------------|
+      | **P2P** | Particulier | Particulier | 5 000 000 XOF |
+      | **P2C** | Particulier | Commerçant | 5 000 000 XOF |
+      | **P2B** | Particulier | Entreprise | 5 000 000 XOF |
+      | **P2G** | Particulier | Gouvernement | 5 000 000 XOF |
+      | **C2P** | Commerçant | Particulier | 5 000 000 XOF |
+      | **C2C** | Commerçant | Commerçant | 5 000 000 XOF |
+      | **C2B** | Commerçant | Entreprise | 5 000 000 XOF |
+      | **C2G** | Commerçant | Gouvernement | 5 000 000 XOF |
+      | **B2P** | Entreprise | Particulier | 10 000 000 XOF |
+      | **B2C** | Entreprise | Commerçant | 10 000 000 XOF |
+      | **B2B** | Entreprise | Entreprise | 100 000 000 XOF |
+      | **B2G** | Entreprise | Gouvernement | 100 000 000 XOF |
+      | **G2P** | Gouvernement | Particulier | 10 000 000 XOF |
+      | **G2C** | Gouvernement | Commerçant | 10 000 000 XOF |
+      | **G2B** | Gouvernement | Entreprise | 100 000 000 XOF |
+      | **G2G** | Gouvernement | Gouvernement | 100 000 000 XOF |
+
+      En tant qu'entreprise, vous pouvez :
+
+      **Envoyer des paiements :**
+      - Jusqu'à **10 000 000 XOF** vers les Particuliers (P) et Commerçants (C)
+      - Jusqu'à **100 000 000 XOF** vers les Entreprises (B) et entités Gouvernementales (G)
+
+      **Recevoir des paiements :**
+      - Jusqu'à **5 000 000 XOF** de la part des Particuliers (P) et Commerçants (C)
+      - Jusqu'à **100 000 000 XOF** de la part des Entreprises (B) et entités Gouvernementales (G)
+
+  - name: PaiementVerification
+    x-displayName: Vérification des paiements
+    description: |
+      Cette fonctionnalité permet au business de vérifier le statut d'un paiement à partir du txId ou du end2endId.
+
+  - name: PaiementEnMasse
+    x-displayName: Paiements en masse
+    description: |
+      Un paiement en masse est un ensemble de paiements qui sont liés entre eux par un identifiant unique (instructionId).
+      Le paiement en masse peut être relancé en cas d'échec de paiement.
+
+      **Taille maximale d'une transaction**:
+      La taille maximale d'une transaction a été estimée en considérant **la longueur maximale de chaque champ** (`txId`, `payeAlias`, `montant`, `motif`, `refDocNumero`, `refDocType`).
+      - Taille maximale par transaction : ~310 octets
+        - `txId` : 35 caractères
+        - `payeAlias` : 36 caractères
+        - `montant` : 10 caractères pour 1 milliard
+        - `motif` : 140 caractères
+        - `refDocNumero` : 35 caractères
+        - `refDocType` : 4 caractères
+        - JSON overhead : ~50 octets
+
+      **Exemples**:
+      | Nombre de transactions | Taille JSON approximative |
+      |------------------------|--------------------------|
+      | 1 000 | ~0,31 MB |
+      | 5 000 | ~1,55 MB |
+      | 10 000 | ~3,1 MB |
+
+      **Enjeux à prendre en compte**:
+      - Performance du serveur : plus le lot est volumineux, plus le traitement peut être long.
+      - Timeout HTTP : des lots très gros peuvent provoquer des erreurs côté client ou serveur.
+      - Risque d’échec partiel : en cas de problème réseau ou serveur, un lot très gros est plus difficile à relancer.
+      - Recommandation pratique : les lots de 500 à 5 000 transactions restent faciles à gérer. Pour des volumes supérieurs, découper le paiement en plusieurs sous-lots.
+
+  - name: RetoursdeFonds
+    x-displayName: Retours de fonds
+    description: |
+      L'opération de retour de fonds est initiée par le client payé pour retourner les fonds d'un paiement reçu.
+      Le payé peut retourner les fonds jusqu'à 90 jours après la date de paiement.
+      Après 90 jours, le retour de fonds ne peut plus être effectué.
+
+  - name: DemandeAnnulation
+    x-displayName: Demandes d'annulation
+    description: |
+      La demande d'annulation est une opération initiée par le client payeur pour solliciter le retour des fonds d'un paiement envoyé.
+
+      Tant que le payé n'a pas retourné les fonds, le payeur peut demander l'annulation du paiement.
+      Par exemple lorsque le payeur demande une deuxième fois l'annulation du paiement, une nouvelle demande d'annulation sera envoyée au payé.
+
+      Le payeur peut demander l'annulation du paiement jusqu'à 90 jours après la date de paiement.
+      Après 90 jours, la demande d'annulation ne peut plus être effectuée.
+
+x-tagGroups:
+  - name: Gestion des comptes
+    tags:
+      - Alias
+      - Comptes
+
+  - name: Enrôlement des alias
+    tags:
+      - Enrôlement
+
+  - name: Référentiel PI
+    tags:
+      - Participants
+
+  - name: Notifications
+    tags:
+      - Notification
+
+  - name: Demandes de paiement
+    tags:
+      - DemandesDePaiement
+      - DemandesDePaiementRecues
+      - DemandesDePaiementEnMasse
+
+  - name: Paiements
+    tags:
+      - PaiementEnvoye
+      - PaiementRecu
+      - PaiementVerification
+      - PaiementEnMasse
+
+  - name: Retours de fonds
+    tags:
+      - RetoursdeFonds
+      - DemandeAnnulation
+
+security:
+  - api_key: []
+
+# ***********
+# *********** Chemins
+# ***********
+paths:
+  # ***********
+  # *********** Gestion des comptes et alias
+  # ***********
+
+  /comptes:
+    $ref: "./paths/compte/comptes-liste.yml"
+
+  /comptes/{numero}:
+    $ref: "./paths/compte/comptes-solde.yml"
+
+  /comptes/transactions:
+    $ref: "./paths/compte/comptes-transactions.yml"
+
+  /comptes/{numero}/alias:
+    $ref: "./paths/compte/comptes-alias.yml"
+
+  /comptes/{numero}/alias/{cle}:
+    $ref: "./paths/compte/comptes-alias-suppression.yml"
+
+  # ***********
+  # *********** Enrôlement des alias
+  # ***********
+
+  /alias/{cle}:
+    $ref: "./paths/enrolement/alias-verification.yml"
+
+  # ***********
+  # *********** Référentiel PI - Participants
+  # ***********
+
+  /participants:
+    $ref: "./paths/participant/participants-liste.yml"
+
+  # ***********
+  # *********** Notifications
+  # ***********
+
+  /webhooks:
+    $ref: "./paths/webhooks/webhooks.yml"
+
+  /webhooks/{id}:
+    $ref: "./paths/webhooks/webhooks-details.yml"
+
+  /webhooks/{id}/secrets:
+    $ref: "./paths/webhooks/webhooks-secrets.yml"
+
+  # # ***********
+  # # *********** Demande de Paiement
+  # # ***********
+
+  # Demandes de paiement envoyées
+  /demandes-paiements:
+    $ref: "./paths/demandes-de-paiement/demandes-paiements.yml"
+
+  /demandes-paiements/{txId}:
+    $ref: "./paths/demandes-de-paiement/demandes-paiements-details.yml"
+
+  /demandes-paiements/{txId}/confirmations:
+    $ref: "./paths/demandes-de-paiement/demandes-paiements-confirmation.yml"
+
+  # Demandes de paiement reçues
+  /demandes-paiements-recues:
+    $ref: "./paths/demandes-de-paiement/demandes-paiements-recues.yml"
+
+  /demandes-paiements-recues/{end2endId}:
+    $ref: "./paths/demandes-de-paiement/demandes-paiements-recues-details.yml"
+
+  /demandes-paiements-recues/{end2endId}/reponses:
+    $ref: "./paths/demandes-de-paiement/demandes-paiements-recues-reponses.yml"
+
+  # Demandes de paiement en masse
+  /demandes-paiements-groupes:
+    $ref: "./paths/demandes-de-paiement/demandes-paiements-en-masse.yml"
+
+  /demandes-paiements-groupes/{instructionId}:
+    $ref: "./paths/demandes-de-paiement/demandes-paiements-en-masse-statut.yml"
+
+  /demandes-paiements-groupes/{instructionId}/confirmations:
+    $ref: "./paths/demandes-de-paiement/demandes-paiements-en-masse-confirmations.yml"
+
+  # ***********
+  # *********** Paiement immédiats
+  # ***********
+
+  # Paiements envoyés
+  /paiements-envoyes:
+    $ref: "./paths/paiement/paiements-envoyes.yml"
+
+  # Confirmer l'envoie d'un paiement immédiat après recherche d'alias
+  /paiements-envoyes/{txId}/confirmations:
+    $ref: "./paths/paiement/paiements-confirmations.yml"
+
+  # Détails d'un paiement envoyé
+  /paiements-envoyes/{txId}:
+    $ref: "./paths/paiement/paiements-envoyes-details.yml"
+
+  # Paiements reçus
+  /paiements-recus:
+    $ref: "./paths/paiement/paiements-recus.yml"
+
+  /paiements-recus/{txId}:
+    $ref: "./paths/paiement/paiements-recus-details.yml"
+
+  # Vérifier la reception d'un paiement à partir de l'end2endId
+  /paiements/{end2endId}:
+    $ref: "./paths/paiement/paiements-verifications.yml"
+
+  # ***********
+  # *********** Paiement en masse
+  # ***********
+  /paiements-groupes:
+    $ref: "./paths/paiement/paiements-en-masse.yml"
+
+  /paiements-groupes/{instructionId}:
+    $ref: "./paths/paiement/paiements-en-masse-details.yml"
+
+  /paiements-groupes/{instructionId}/confirmations:
+    $ref: "./paths/paiement/paiements-en-masse-confirmations.yml"
+
+  # ***********
+  # *********** Retours de fonds
+  # ***********
+  /paiements/{end2endId}/retours:
+    $ref: "./paths/paiement/paiements-retours.yml"
+
+  /paiements/{end2endId}/annulations:
+    $ref: "./paths/paiement/paiements-annulation.yml"
+
+  /paiements/{end2endId}/annulations/reponses:
+    $ref: "./paths/paiement/paiements-annulation-reponse.yml"
+
+# ***********
+# *********** Modèles de données
+# ***********
+components:
+  # SECURITY
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: x-api-key
+      in: header
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://spi.example.com/oauth/token
+          scopes:
+            compte_transaction.write: Autorisation d'effectuer des mouvements de fonds entre ses comptes
+            compte_transaction.read: Autorisation pour consulter les transactions intra-comptes
+            compte.read: Autorisation pour consulter les comptes
+
+            alias.write: Autorisation de créer les alias
+            alias.read: Autorisation de consulter les alias
+            alias.delete: Autorisation  de supprimer des alias
+
+            enrolement_alias.read: Autorisation pour vérifier l'existence d'un alias
+
+            participant.read: Autorisation de consulter la liste des participants PI
+
+            webhook.read: Autorisation de consulter le webhook
+            webhook.write: Autorisation d'écrire sur le webhook
+            webhook.delete: Autorisation de supprimer des webhooks
+
+            demande_paiement.write: Autorisation  de créer une demande de paiement
+            demande_paiement.read: Autorisation pour consulter des demandes de paiement
+            demande_paiement_reponse.write: Autorisation d'accepter ou de rejeter une demande de paiement
+            demande_paiement_groupe.write: Autorisation de créer des demandes de paiement en masse
+            demande_paiement_groupe.read: Autorisation pour consulter le statut d'une demande de paiement en masse
+
+            paiement.write: Autorisation  de créer un paiement immédiat
+            paiement.read: Autorisation pour consulter des paiements immédiats
+            paiement_groupe.write: Autorisation de créer des paiements en masse
+            paiement_groupe.read: Autorisation pour consulter le statut d'un paiement en masse
+
+            retour_fonds.write: Autorisation d'effectuer des retours de fonds
+            demande_annulation.write: Autorisation d'envoyer des demandes d'annulation de paiement
+            demande_annulation_reponse.write: Autorisation de répondre aux demandes d'annulation de paiement

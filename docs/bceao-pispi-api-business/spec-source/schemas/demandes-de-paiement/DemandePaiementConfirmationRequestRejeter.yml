@@ -1,0 +1,10 @@
+type: object
+properties:
+  decision:
+    type: boolean
+    enum: [false]
+    description: La décision  à `false`  indique l'annulation de la demande de paiement.
+additionalProperties: false
+description: Annulation de la demande de paiement
+required:
+  - decision

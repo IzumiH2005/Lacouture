@@ -1,0 +1,30 @@
+# Exemple de réponse refusée à une demande d'annulation
+summary: "Demande d'annulation refusée - Pas de retour de fonds"
+description: |
+  Le business a refusé la demande d'annulation.
+
+  L'objet Paiement retourné contient :
+  - Les champs `annulationStatut` et `annulationDateReponse` mis à jour pour indiquer le rejet
+  - Les champs `retour*` ne sont PAS renseignés car aucun retour de fonds n'est effectué
+value:
+  txId: "Tag-b8e07egdtge076egdtge"
+  payeurAlias: "8c2c4588-4f61-546c-c868-bd8b94e9bb07"
+  payeurNom: "Marie Martin"
+  payeurPays: "CI"
+  payeAlias: "7a0a1377-2d40-324a-a646-9b6a72c7aa7b"
+  payeNom: "Boutique Commerce 123"
+  payePays: "CI"
+  payeCompte: "4321098765"
+  categorie: "500"
+  montant: 1500000
+  confirmation: false
+  dateConfirmation: "2024-01-08T14:20:00.050Z" # date d'acceptation du client payeur
+  statut: "IRREVOCABLE"
+  end2endId: "ESNB00120240108142000LYwpalpOwjVl0f"
+  dateIrrevocabilite: "2024-01-08T14:20:01.000Z"
+  motif: "Achat de marchandises"
+  # Données de la demande d'annulation
+  annulationStatut: "REJETE"
+  annulationMotif: "SVNR"
+  annulationDateDemande: "2024-01-11T09:15:01.000Z"
+  annulationDateReponse: "2024-01-11T10:10:01.000Z"

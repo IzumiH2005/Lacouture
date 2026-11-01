@@ -1,0 +1,3 @@
+summary: "Un webhook pour recevoir toutes les notifications"
+value:
+  callbackUrl: "https://businessmerchant.com/api/piz/webhooks/"

@@ -1,0 +1,15 @@
+summary: Paiement de facture avec remise
+value:
+  txId: "RTP-2023-008"
+  confirmation: true
+  categorie: "401"
+  payeurAlias: "9b1b3499-3e50-435b-b757-ac7a83d8aa96"
+  payeAlias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+  montant: 200000
+  dateLimitePaiement: "2023-04-30T23:59:59.999Z"
+  dateLimiteReponse: "2023-04-15T23:59:59.999Z"
+  remise:
+    montant: 10000
+  motif: "Facture téléphone avec réduction fidélité"
+  refDocType: "CINV"
+  refDocNumero: "FACT-TEL-202304"

@@ -1,0 +1,146 @@
+type: object
+properties:
+  txId:
+    type: string
+    maxLength: 35
+    description: Identifiant de la demande de paiement dans le SI du client
+
+  payeurAlias:
+    type: string
+    example: "9b1b3499-3e50-435b-b757-ac7a83d8aa96"
+    description: Alias de compte du client payeur à qui est adressé la demande
+
+  payeAlias:
+    type: string
+    example: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+    description: L'alias de compte dans lequel le client payé souhaite recevoir les paiements
+
+  confirmation:
+    type: boolean
+    description: |
+      Lorsque le PSP recoit la demande, il effectue une recherche d'alias en vue d'obtenir les informations de compte du client payeur.
+
+      L'attribut `confirmation` permet au client d'indiquer à son PSP si celui-ci doit lui retourner les resultats de la recherche d'alias pour confirmation:
+
+      * La valeur `true` de la confirmation indique au PSP qu'il doit retourner le resultat de la recherche d'alias au client et attendre une confirmation
+      * La valeur `false` indique qu'une confirmation n'est pas requise pour la demande, de ce fait le PSP transmet directement la demande à PI
+
+  categorie:
+    $ref: "./DemandePaiementRequestCategorie.yml"
+
+  dateLimitePaiement:
+    type: string
+    format: date
+    description: |
+      La date limite à laquelle le payeur doit avoir effectuer le paiement.
+      Dans le cas d'une demande de paiement de facture, il s'agit en général de la date indiquée avec la mention "A payer avant".
+
+  dateLimiteReponse:
+    type: string
+    format: date
+    description: |
+      C'est la date limite avant laquelle une réponse doit être fournie par le payeur.
+      La demande de paiement expire à cette date. Le client payé ne peut ni accepter ni refuser après cette date.
+      Par défaut, la date limite de réponse est la date de la demande + 90 jours (3 mois).
+
+  montant:
+    type: number
+    description: Le montant du paiement à effectué
+
+  montantAchat:
+    type: number
+    description: Le montant de l'achat dans le cadre d'une demande de paiement PICO
+
+  montantRetrait:
+    type: number
+    description: Le montant du retrait dans le cadre d'une demande de paiement PICO ou PICASH
+
+  montantFrais:
+    type: number
+    description: Les frais de retrait dans le cadre d'une demande de paiement PICO
+
+  remise:
+    type: object
+    description: |
+      Remise appliquée pour un paiement immédiat dés réception de la demande
+    properties:
+      montant:
+        type: number
+        description: Le montant de la remise
+      taux:
+        type: number
+        description: Le taux de la remise
+    additionalProperties: false
+    oneOf:
+      - required: ["montant"]
+      - required: ["taux"]
+
+  debitDiffere:
+    type: boolean
+    description: |
+      Indique si le payeur peut acheter maintenant et payer plus tard.
+
+      La valeur est true pour un paiement immédiat avec débit différé (Acheter maintenant, payer plus tard). 
+      Dans le cas du débit différé, le participant du client payeur paye le montant demandé prenant en compte la remise.
+
+  motif:
+    type: string
+    description: Le motif de la demande de paiement
+    maxLength: 140
+
+  refDocNumero:
+    type: string
+    description: Le numéro / la reference du document justificatif
+    maxLength: 35
+
+  refDocType:
+    $ref: "../commons/RefDocType.yml"
+
+  statut:
+    $ref: "./DemandePaiementStatut.yml"
+
+  statutRaison:
+    $ref: "./DemandePaiementStatutRaison.yml"
+
+  payeurNom:
+    type: string
+    description: |
+      Le nom du payeur.
+
+      **Présence selon le statut :**
+      - `INITIE` (avec confirmation) : Présent ✅
+      - `ENVOYE` (sans confirmation) : Présent ✅
+      - `REJETE` avec BE23 ou DU03 : Absent ❌
+  payeurPays:
+    type: string
+    description: |
+      Le pays de résidence du payeur.
+
+      **Présence selon le statut :**
+      - `INITIE` (avec confirmation) : Présent ✅
+      - `ENVOYE` (sans confirmation) : Présent ✅
+      - `REJETE` avec BE23 ou DU03 : Absent ❌
+
+  end2endId:
+    type: string
+    description: Identifiant unique de bout en bout de la transaction
+
+  # Date de la demande de paiement
+  dateDemande:
+    type: string
+    format: date-time
+    description: Date d'envoi de la demande de paiement par le business
+
+  # Date d'envoi de la demande de paiement
+  dateEnvoi:
+    type: string
+    format: date-time
+    description: Date d'envoi de la demande de paiement par le participant
+
+  # Date de confirmation de la demande de paiement
+  dateConfirmation:
+    type: string
+    format: date-time
+    description: |
+      Date de confirmation de la demande si le client avait requis la confirmation de la demande de paiement.
+      Il s'agit de la date et heure à laquelle le client a confirmé la demande.

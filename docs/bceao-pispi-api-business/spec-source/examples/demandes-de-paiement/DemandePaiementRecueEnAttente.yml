@@ -1,0 +1,16 @@
+summary: "Demande de paiement reçue en attente de réponse"
+value:
+  txId: "RTP-2023-003"
+  end2endId: "ESNC00320230221153000KXvozkpNvhUk9f"
+  categorie: "401"
+  payeurAlias: "9b1b3499-3e50-435b-b757-ac7a83d8aa96"
+  payeAlias: "9b1b2499-3e50-435b-b757-ac7a83d8aa8c"
+  payeNom: "Traoré & Freres"
+  payePays: "CI"
+  montant: 150000
+  statut: "INITIE"
+  refDocType: "CINV"
+  refDocNumero: "FACT-ELEC-202303"
+  dateDemande: "2023-02-21T15:30:00.000Z"
+  dateLimitePaiement: "2023-03-31T23:59:59.999Z"
+  dateLimiteReponse: "2023-04-15T23:59:59.999Z"
