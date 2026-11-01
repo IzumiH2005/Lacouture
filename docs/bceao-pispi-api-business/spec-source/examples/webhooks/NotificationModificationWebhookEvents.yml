@@ -1,9 +1,0 @@
-summary: "Modifier la liste des événements"
-value:
-  events:
-    - PAIEMENT_RECU
-    - PAIEMENT_ENVOYE
-    - PAIEMENT_REJETE
-    - RTP_RECU
-    - RTP_REJETE
-

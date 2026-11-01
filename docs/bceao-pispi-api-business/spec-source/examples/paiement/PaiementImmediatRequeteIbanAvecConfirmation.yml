@@ -1,9 +1,0 @@
-# Paiement par IBAN - confirmation requise
-summary: "Paiement par IBAN - confirmation requise"
-value:
-  txId: "23552724"
-  payeurAlias: "8b1b2499-3e50-435b-b757-ac7a83d8aa7f"
-  payeIban: "SN15SN0150101307430029018"
-  payeParticipant: "SNB015"
-  montant: 150000
-  confirmation: true

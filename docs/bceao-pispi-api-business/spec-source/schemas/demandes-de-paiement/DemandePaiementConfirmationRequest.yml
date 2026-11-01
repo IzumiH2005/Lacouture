@@ -1,4 +1,0 @@
-type: object
-oneOf:
-  - $ref: "./DemandePaiementConfirmationRequestAccepter.yml"
-  - $ref: "./DemandePaiementConfirmationRequestRejeter.yml"

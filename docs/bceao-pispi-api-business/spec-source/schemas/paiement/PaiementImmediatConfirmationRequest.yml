@@ -1,6 +1,0 @@
-type: object
-oneOf:
-  - title: Confirmer l'envoi du paiement
-    $ref: "./PaiementImmediatConfirmationRequestAccepter.yml"
-  - title: Annuler l'envoi du paiement
-    $ref: "./PaiementImmediatConfirmationRequestRejeter.yml"

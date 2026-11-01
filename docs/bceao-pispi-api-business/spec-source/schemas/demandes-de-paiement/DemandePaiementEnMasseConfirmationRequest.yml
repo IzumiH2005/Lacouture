@@ -1,6 +1,0 @@
-type: object
-oneOf:
-  - title: Confirmer l'envoi de la demande de paiement en masse
-    $ref: "./DemandePaiementEnMasseConfirmationRequestAccepter.yml"
-  - title: Annuler l'envoi de la demande de paiement en masse
-    $ref: "./DemandePaiementEnMasseConfirmationRequestRejeter.yml"

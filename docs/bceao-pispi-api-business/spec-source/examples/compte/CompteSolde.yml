@@ -1,7 +1,0 @@
-summary: "Details d'un compte"
-value:
-  type: "CACC"
-  numero: "CIC2344256727788288822"
-  solde: 150000000
-  statut: OUVERT
-  dateOuverture: "2023-02-21"

@@ -1,9 +1,0 @@
-summary: "Transfert rejeté"
-value:
-  txId: "23511722"
-  payeurNumero: "ac7a83d8aa7f"
-  payeNumero: "jdko7588578"
-  montant: 150000
-  statut: REJETE
-  statutRaison: "AG07"
-  dateEnvoi: "2023-02-21T15:30:01.250Z"

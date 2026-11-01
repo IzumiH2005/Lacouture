@@ -1,4 +1,0 @@
-summary: "Modifier uniquement l'URL de callback"
-value:
-  callbackUrl: "https://businessmerchant.com/api/v2/webhooks/notifications"
-

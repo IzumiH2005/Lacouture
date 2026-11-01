@@ -1,8 +1,0 @@
-# 404
-# Problem7807ExempleNotFoundJSON:
-summary: "Problème ressource inexistant"
-value:
-  type: "about:blank"
-  title: "NotFound"
-  status: 404
-  detail: "La ressource n'existe pas dans le système"

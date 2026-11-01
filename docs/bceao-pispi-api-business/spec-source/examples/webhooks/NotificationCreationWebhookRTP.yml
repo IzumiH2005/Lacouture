@@ -1,6 +1,0 @@
-summary: "Un webhook pour recevoir les notifications sur les demandes de paiement"
-value:
-  callbackUrl: "https://businessmerchant.com/api/piz/webhooks/"
-  events:
-    - RTP_RECU
-    - RTP_REJETE
